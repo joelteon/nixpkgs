@@ -231,7 +231,7 @@ let
       else
         defaultStdenv;
 
-  stdenvApple = stdenvAdapters.overrideGCC allStdenvs.stdenvNative gccApple;
+  stdenvApple = stdenvAdapters.overrideGCC allStdenvs.stdenvNative gccApplePhony;
 
   forceNativeDrv = drv : if crossSystem == null then drv else
     (drv // { crossDrv = drv.nativeDrv; });
@@ -2795,8 +2795,17 @@ let
       else null;
   }));
 
+  gccApplePhony =
+    wrapGCC (makeOverridable (import ../development/compilers/gcc/4.2-apple64) {
+      inherit fetchurl noSysDirs;
+      profiledCompiler = true;
+      phony = true;
+      # Since it fails to build with GCC 4.6, build it with the "native"
+      # Apple-GCC.
+      stdenv = allStdenvs.stdenvNative;
+    });
+
   gccApple =
-    assert stdenv.isDarwin;
     wrapGCC (makeOverridable (import ../development/compilers/gcc/4.2-apple64) {
       inherit fetchurl noSysDirs;
       profiledCompiler = true;
@@ -3770,9 +3779,11 @@ let
 
   bam = callPackage ../development/tools/build-managers/bam {};
 
-  binutils = callPackage ../development/tools/misc/binutils {
-    inherit noSysDirs;
-  };
+  binutils = if stdenv.isDarwin
+    then stdenv.gcc.binutils
+    else callPackage ../development/tools/misc/binutils {
+      inherit noSysDirs;
+    };
 
   binutils_nogold = lowPrio (callPackage ../development/tools/misc/binutils {
     inherit noSysDirs;
@@ -4050,11 +4061,7 @@ let
 
   peg = callPackage ../development/tools/parsing/peg { };
 
-  phantomjs = callPackage ../development/tools/phantomjs {
-    stdenv = if stdenv.isDarwin
-      then overrideGCC stdenv gccApple
-      else stdenv;
-  };
+  phantomjs = callPackage ../development/tools/phantomjs { };
 
   pmccabe = callPackage ../development/tools/misc/pmccabe { };
 
@@ -9818,7 +9825,9 @@ let
     flup = pythonPackages.flup;
   };
 
-  vim = callPackage ../applications/editors/vim { };
+  vim = callPackage ../applications/editors/vim {
+    stdenv = clangStdenv;
+  };
 
   macvim = callPackage ../applications/editors/vim/macvim.nix { };
 

@@ -2,8 +2,10 @@
 , langCC ? true, langObjC ? true, langF77 ? false
 , profiledCompiler ? false
 , gmp ? null, mpfr ? null, bison ? null, flex ? null
+, phony ? false
 }:
 
+assert phony;
 assert stdenv.isDarwin;
 assert langF77 -> gmp != null;
 

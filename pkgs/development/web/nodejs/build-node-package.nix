@@ -37,7 +37,7 @@ stdenv.mkDerivation ({
 
   buildPhase = ''
     runHook preBuild
-    npm --registry http://www.example.com --nodedir=${sources} install $src ${npmFlags}
+    npm --registry http://nowhere.dtd --nodedir=${sources} install $src ${npmFlags}
     runHook postBuild
   '';
 
