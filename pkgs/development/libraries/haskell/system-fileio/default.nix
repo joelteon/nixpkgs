@@ -11,6 +11,7 @@ cabal.mkDerivation (self: {
   testDepends = [
     chell systemFilepath temporary text time transformers
   ];
+  doCheck = false;
   meta = {
     homepage = "https://john-millikin.com/software/haskell-filesystem/";
     description = "Consistent filesystem interaction across GHC versions";

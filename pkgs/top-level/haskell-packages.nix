@@ -3010,6 +3010,20 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   Allure = callPackage ../games/Allure {};
 
+  # le me
+
+  airbrake = callPackage ../development/libraries/haskell/airbrake {};
+  highlighter = callPackage ../development/libraries/haskell/highlighter {};
+  imagemagick = callPackage ../development/libraries/haskell/imagemagick {
+    ImageMagick = pkgs.imagemagick;
+  };
+  markdown = callPackage ../development/libraries/haskell/markdown {};
+  stmLifted = callPackage ../development/libraries/haskell/stm-lifted {};
+  textNormal = callPackage ../development/libraries/haskell/text-normal {};
+  yesodNewsfeed = callPackage ../development/libraries/haskell/yesod-newsfeed {};
+  yesodPagination = callPackage ../development/libraries/haskell/yesod-pagination {};
+  yesodWebsockets = callPackage ../development/libraries/haskell/yesod-websockets {};
+
 # End of the main part of the file.
 
 }
