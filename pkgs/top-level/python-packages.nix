@@ -4540,6 +4540,11 @@ rec {
       [ dateutil nose numpy pyparsing tornado pkgs.freetype pkgs.libpng pkgs.pkgconfig
       ];
 
+    preConfigure = ''
+      sed -i 's/\/usr/\/var\/empty/g' setupext.py
+      sed -i 's/\/opt/\/var\/empty/g' setupext.py
+    '';
+
     meta = with stdenv.lib; {
       description = "python plotting library, making publication quality plots";
       homepage    = "http://matplotlib.sourceforge.net/";
