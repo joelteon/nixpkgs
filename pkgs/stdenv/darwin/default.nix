@@ -84,7 +84,11 @@ rec {
         nativePrefix = "${buildTools.tools}/Library/Developer/CommandLineTools/usr";
         nativeLibc   = true;
         stdenv       = stage0.stdenv;
-        libcxx       = "/usr";
+        libcxx       = {
+          name = "libcxx-9.9.9";
+          outPath = "/usr";
+          abi = "/usr"; # clang-wrapper expects libcxx.abi to be non-null
+        };
         shell        = "/bin/bash";
         clang        = {
           name    = "clang-9.9.9";

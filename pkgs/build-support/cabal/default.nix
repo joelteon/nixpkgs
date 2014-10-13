@@ -215,9 +215,7 @@ assert !enableStaticLibraries -> versionOlder "7.7" ghc.version;
                 configureFlags+=" --ghc-option=-j$NIX_BUILD_CORES"
               ''}
 
-              ${optionalString self.stdenv.isDarwin ''
-                configureFlags+=" --with-gcc=clang"
-              ''}
+              configureFlags+=" --with-gcc=${stdenv.cc.progname}"
 
               echo "configure flags: $extraConfigureFlags $configureFlags"
               ./Setup configure --verbose --prefix="$out" --libdir='$prefix/lib/$compiler' \

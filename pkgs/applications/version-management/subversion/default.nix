@@ -15,7 +15,7 @@ assert httpServer -> httpd != null;
 assert pythonBindings -> swig != null && python != null;
 assert javahlBindings -> jdk != null && perl != null;
 
-stdenv.mkDerivation (rec {
+stdenv.mkDerivation rec {
 
   version = "1.8.10";
 
@@ -71,15 +71,15 @@ stdenv.mkDerivation (rec {
 
   enableParallelBuilding = true;
 
+  CC = stdenv.cc.progname;
+  CXX = stdenv.cc.prognamexx;
+  CPP = "${CC} -E";
+  CXXCPP = "${CXX} -E";
+
   meta = {
     description = "A version control system intended to be a compelling replacement for CVS in the open source community";
     homepage = http://subversion.apache.org/;
     maintainers = with stdenv.lib.maintainers; [ eelco lovek323 ];
     hydraPlatforms = stdenv.lib.platforms.linux ++ stdenv.lib.platforms.darwin;
   };
-} // stdenv.lib.optionalAttrs stdenv.isDarwin {
-  CXX = "clang++";
-  CC = "clang";
-  CPP = "clang -E";
-  CXXCPP = "clang++ -E";
-})
+}

@@ -1,0 +1,15 @@
+diff --git a/hints/darwin.sh b/hints/darwin.sh
+index f9b697b..2cfe3f7 100644
+--- a/hints/darwin.sh
++++ b/hints/darwin.sh
+@@ -183,10 +183,6 @@ case "$osvers" in
+    ;;
+ *) 
+    lddlflags="${ldflags} -bundle -undefined dynamic_lookup"
+-   case "$ld" in
+-       *MACOSX_DEVELOPMENT_TARGET*) ;;
+-       *) ld="env MACOSX_DEPLOYMENT_TARGET=10.3 ${ld}" ;;
+-   esac
+    ;;
+ esac
+ ldlibpthname='DYLD_LIBRARY_PATH';

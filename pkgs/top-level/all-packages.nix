@@ -1225,9 +1225,7 @@ let
     guile = guile_1_8;
   };
 
-  gnugrep = callPackage ../tools/text/gnugrep {
-    libiconv = libiconvOrNull;
-  };
+  gnugrep = callPackage ../tools/text/gnugrep { };
 
   gnulib = callPackage ../development/tools/gnulib { };
 
@@ -5679,14 +5677,14 @@ let
 
   libgsf = callPackage ../development/libraries/libgsf { };
 
-  libiconv = callPackage ../development/libraries/libiconv { };
-
   libiconvOrEmpty = if libiconvOrNull == null then [] else [libiconv];
 
-  libiconvOrNull =
-    if stdenv.gcc.libc or null != null || stdenv.isGlibc
+  libiconv =
+    if (stdenv.isDarwin && stdenv.cc.nativeTools)
+       || stdenv.gcc.libc or null != null
+       || stdenv.isGlibc
     then null
-    else libiconv;
+    else callPackage ../development/libraries/libiconv { };
 
   # The logic behind this attribute is broken: libiconvOrNull==null does
   # NOT imply libiconv=glibc! On Darwin, for example, we have a native

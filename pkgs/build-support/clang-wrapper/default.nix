@@ -10,6 +10,7 @@
 , zlib ? null, libcxx
 }:
 
+assert libcxx ? abi;
 assert nativeTools -> nativePrefix != "";
 assert !nativeTools -> clang != null && binutils != null && coreutils != null;
 assert !nativeLibc -> libc != null;
@@ -37,7 +38,7 @@ stdenv.mkDerivation {
 
   inherit nativeTools nativeLibc nativePrefix clang clangVersion libcxx;
 
-  libcxxabi = libcxx.abi or null;
+  libcxxabi = libcxx.abi;
 
   libc = if nativeLibc then null else libc;
   binutils = if nativeTools then null else binutils;
@@ -65,6 +66,11 @@ stdenv.mkDerivation {
        if stdenv.cross.arch == "mips" then "ld.so.1" else
        if stdenv.lib.hasSuffix "pc-gnu" stdenv.cross.config then "ld.so.1" else
        abort "don't know the name of the dynamic linker for this platform");
+  };
+
+  passthru = {
+    progname = "clang";
+    prognamexx = "clang++";
   };
 
   meta =
