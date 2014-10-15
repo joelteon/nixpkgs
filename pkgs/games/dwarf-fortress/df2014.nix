@@ -48,7 +48,7 @@ stdenv.mkDerivation rec {
     cd ../../
     cp -r ./df_linux/* $out/share/df_linux
     rm $out/share/df_linux/libs/lib*
-    patchelf --set-rpath "${stdenv.lib.makeLibraryPath [ stdenv.gcc.gcc stdenv.glibc ]}:$out/share/df_linux/libs"  $out/share/df_linux/libs/Dwarf_Fortress
+    patchelf --set-rpath "${stdenv.lib.makeLibraryPath [ stdenv.cc.gcc stdenv.glibc ]}:$out/share/df_linux/libs"  $out/share/df_linux/libs/Dwarf_Fortress
     cp -f ./git-export/build/libgraphics.so $out/share/df_linux/libs/libgraphics.so
 
     cp $permission $out/share/df_linux/nix_permission
@@ -94,7 +94,7 @@ stdenv.mkDerivation rec {
     ''}
 
     # now run Dwarf Fortress!
-    export LD_LIBRARY_PATH=\${stdenv.gcc}/lib:${SDL}/lib:${SDL_image}/lib/:${SDL_ttf}/lib/:${gtk2}/lib/:${glib}/lib/:${mesa}/lib/:${openal}/lib/:${libsndfile}/lib:$DF_DIR/df_linux/libs/
+    export LD_LIBRARY_PATH=\${stdenv.cc}/lib:${SDL}/lib:${SDL_image}/lib/:${SDL_ttf}/lib/:${gtk2}/lib/:${glib}/lib/:${mesa}/lib/:${openal}/lib/:${libsndfile}/lib:$DF_DIR/df_linux/libs/
     \$DF_DIR/df "\$@"
     EOF
 

@@ -47,12 +47,12 @@ let
       if [ "${stdenv.system}" == "x86_64-linux" ]; then
         target_size=$(get_file_size bin/fsnotifier64)
         patchelf --set-interpreter "$interpreter" bin/fsnotifier64
-        patchelf --set-rpath ${stdenv.gcc.gcc}/lib64/ "$snappyPath/org/xerial/snappy/native/Linux/amd64/libsnappyjava.so"
+        patchelf --set-rpath ${stdenv.cc.gcc}/lib64/ "$snappyPath/org/xerial/snappy/native/Linux/amd64/libsnappyjava.so"
         munge_size_hack bin/fsnotifier64 $target_size
       else
         target_size=$(get_file_size bin/fsnotifier)
         patchelf --set-interpreter "$interpreter" bin/fsnotifier
-        patchelf --set-rpath ${stdenv.gcc.gcc}/lib/ "$snappyPath/org/xerial/snappy/native/Linux/i386/libsnappyjava.so"
+        patchelf --set-rpath ${stdenv.cc.gcc}/lib/ "$snappyPath/org/xerial/snappy/native/Linux/i386/libsnappyjava.so"
         munge_size_hack bin/fsnotifier $target_size
       fi
       7z a -tzip "$snappyPath.jar" ./"$snappyPath"/*
@@ -70,7 +70,7 @@ let
 
       makeWrapper "$out/$name/bin/${loName}.sh" "$out/bin/${loName}" \
         --prefix PATH : "${jdk}/bin:${coreutils}/bin:${gnugrep}/bin:${which}/bin:${git}/bin" \
-        --prefix LD_RUN_PATH : "${stdenv.gcc.gcc}/lib/" \
+        --prefix LD_RUN_PATH : "${stdenv.cc.gcc}/lib/" \
         --prefix JDK_HOME : "$jdk" \
         --prefix ${hiName}_JDK : "$jdk"
 

@@ -49,7 +49,7 @@ stdenv.mkDerivation rec {
       (substituteAll {
         src = ./qt-5.3-dlopen-absolute-paths.patch;
         inherit cups icu libXfixes;
-        glibc = stdenv.gcc.libc;
+        glibc = stdenv.cc.libc;
         openglDriver = if mesaSupported then mesa.driverLink else "/no-such-path";
       })
     ] ++ optional gtkStyle (substituteAll {

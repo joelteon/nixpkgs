@@ -51,7 +51,7 @@ rec {
         NIX_GCC = import ../build-support/gcc-wrapper {
           inherit stdenv;
           libc = pkgs.dietlibc;
-          inherit (stdenv.gcc) gcc binutils nativeTools nativePrefix;
+          inherit (stdenv.cc) gcc binutils nativeTools nativePrefix;
           nativeLibc = false;
         };
       });
@@ -78,7 +78,7 @@ rec {
           ln -s ${klibc}/bin/klcc $out/bin/gcc
           ln -s ${klibc}/bin/klcc $out/bin/cc
           mkdir -p $out/nix-support
-          echo 'PATH=$PATH:${stdenv.gcc.binutils}/bin' > $out/nix-support/setup-hook
+          echo 'PATH=$PATH:${stdenv.cc.binutils}/bin' > $out/nix-support/setup-hook
         '';
       });
       isKlibc = true;
@@ -290,12 +290,12 @@ rec {
      invoked. */
   useGoldLinker = stdenv:
     let
-      binutils = stdenv.gcc.binutils;
+      binutils = stdenv.cc.binutils;
       binutils' = pkgs.runCommand "${binutils.name}-gold" { }
         ''
           mkdir -p $out/bin
           ln -s ${binutils}/bin/* $out/bin/
           ln -sfn ${binutils}/bin/ld.gold $out/bin/ld
         ''; # */
-    in overrideGCC stdenv (stdenv.gcc.override { binutils = binutils'; });
+    in overrideGCC stdenv (stdenv.cc.override { binutils = binutils'; });
 }

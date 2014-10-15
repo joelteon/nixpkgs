@@ -15,14 +15,14 @@ stdenv.mkDerivation rec {
   buildInputs = [rpm cpio ncurses unzip makeWrapper];
   libPath =
     stdenv.lib.makeLibraryPath
-       [ stdenv.gcc.gcc stdenv.gcc.libc ncurses ];
+       [ stdenv.cc.gcc stdenv.cc.libc ncurses ];
 
   buildCommand = ''
     mkdir -p $out/bin
     cd $out
     unzip ${src}
     rpm2cpio linux/MegaCli-8.07.07-1.noarch.rpm | cpio -idmv
-    ${patchelf}/bin/patchelf --interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" --set-rpath ${libPath}:$out/opt/lsi/3rdpartylibs/x86_64:$out/opt/lsi/3rdpartylibs:${stdenv.gcc.gcc}/lib64:${stdenv.gcc.gcc}/lib opt/MegaRAID/MegaCli/MegaCli64
+    ${patchelf}/bin/patchelf --interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" --set-rpath ${libPath}:$out/opt/lsi/3rdpartylibs/x86_64:$out/opt/lsi/3rdpartylibs:${stdenv.cc.gcc}/lib64:${stdenv.cc.gcc}/lib opt/MegaRAID/MegaCli/MegaCli64
     wrapProgram $out/opt/MegaRAID/MegaCli/MegaCli64 --set LD_LIBRARY_PATH $out/opt/lsi/3rdpartylibs/x86_64
     ln -s $out/opt/MegaRAID/MegaCli/MegaCli64 $out/bin/MegaCli64
     eval fixupPhase

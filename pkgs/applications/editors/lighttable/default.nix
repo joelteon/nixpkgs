@@ -5,7 +5,7 @@
 
 let
   libPath = stdenv.lib.makeLibraryPath [
-      stdenv.gcc.gcc zlib glib dbus gtk atk pango freetype libgnome_keyring3 nss
+      stdenv.cc.gcc zlib glib dbus gtk atk pango freetype libgnome_keyring3 nss
       fontconfig gdk_pixbuf cairo cups expat libgpgerror alsaLib nspr gnome3.gconf
       xlibs.libXrender xlibs.libX11 xlibs.libXext xlibs.libXdamage xlibs.libXtst
       xlibs.libXcomposite xlibs.libXi xlibs.libXfixes
@@ -41,7 +41,7 @@ stdenv.mkDerivation rec {
 
     patchelf \
       --interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" \
-      --set-rpath ${libPath}:${stdenv.gcc.gcc}/lib${stdenv.lib.optionalString stdenv.is64bit "64"} \
+      --set-rpath ${libPath}:${stdenv.cc.gcc}/lib${stdenv.lib.optionalString stdenv.is64bit "64"} \
       $out/LightTable/ltbin
 
     ln -s ${udev}/lib/libudev.so.1 $out/LightTable/libudev.so.0

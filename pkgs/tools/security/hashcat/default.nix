@@ -4,7 +4,7 @@ assert stdenv.isLinux;
 
 let
   bits    = if stdenv.system == "x86_64-linux" then "64" else "32";
-  libPath = stdenv.lib.makeLibraryPath [ stdenv.gcc.libc ];
+  libPath = stdenv.lib.makeLibraryPath [ stdenv.cc.libc ];
 
   fixBin = x: ''
     patchelf --interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" \

@@ -29,7 +29,7 @@ let
     ];
 
   buildInputs =
-    optional (stdenv ? gcc && stdenv.gcc.libc != null) stdenv.gcc.libc ++
+    optional (stdenv ? cc && stdenv.cc.libc != null) stdenv.cc.libc ++
     [ bzip2 openssl ]
     ++ optional zlibSupport zlib;
 
@@ -52,9 +52,9 @@ let
         for i in /usr /sw /opt /pkg; do
           substituteInPlace ./setup.py --replace $i /no-such-path
         done
-      '' + optionalString (stdenv ? gcc && stdenv.gcc.libc != null) ''
+      '' + optionalString (stdenv ? cc && stdenv.cc.libc != null) ''
         for i in Lib/plat-*/regen; do
-          substituteInPlace $i --replace /usr/include/ ${stdenv.gcc.libc}/include/
+          substituteInPlace $i --replace /usr/include/ ${stdenv.cc.libc}/include/
         done
       '';
 

@@ -41,7 +41,7 @@ let
     xz
     libcanberra
     xcbutilkeysyms
-  ] + ":${stdenv.gcc.gcc}/lib${stdenv.lib.optionalString stdenv.is64bit "64"}";
+  ] + ":${stdenv.cc.gcc}/lib${stdenv.lib.optionalString stdenv.is64bit "64"}";
 
   src =
     if stdenv.system == "x86_64-linux" then

@@ -1,6 +1,6 @@
 { stdenv, lib, fetchurl, fetchhg, bison, glibc, bash, coreutils, makeWrapper, tzdata, iana_etc, perl }:
 
-assert stdenv.gcc.gcc != null;
+assert stdenv.cc.gcc != null;
 
 let
   loader386 = "${glibc}/lib/ld-linux.so.2";
@@ -86,7 +86,7 @@ stdenv.mkDerivation {
     # http://lists.science.uu.nl/pipermail/nix-dev/2013-October/011891.html
     # Fix for "libgcc_s.so.1 must be installed for pthread_cancel to work"
     # during tests:
-    export LD_LIBRARY_PATH="$(dirname $(echo ${stdenv.gcc.gcc}/lib/libgcc_s.so))"
+    export LD_LIBRARY_PATH="$(dirname $(echo ${stdenv.cc.gcc}/lib/libgcc_s.so))"
 
     mkdir -p "$out/bin"
     export GOROOT="$(pwd)/"

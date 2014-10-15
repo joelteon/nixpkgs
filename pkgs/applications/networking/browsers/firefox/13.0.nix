@@ -11,7 +11,7 @@
   enableOfficialBranding ? false
 }:
 
-assert stdenv.gcc ? libc && stdenv.gcc.libc != null;
+assert stdenv.cc ? libc && stdenv.cc.libc != null;
 
 rec {
 
@@ -71,7 +71,7 @@ rec {
       ''
         find . -name Makefile.in -execdir sed -i '{}' -e '1ivpath %.so ${
           stdenv.lib.concatStringsSep ":" 
-            (map (s : s + "/lib") (buildInputs ++ [stdenv.gcc.libc]))
+            (map (s : s + "/lib") (buildInputs ++ [stdenv.cc.libc]))
         }' ';'
 
         export NIX_LDFLAGS="$NIX_LDFLAGS -L$out/lib/xulrunner-${xulVersion}"
@@ -156,7 +156,7 @@ rec {
       ''
         find . -name Makefile.in -execdir sed -i '{}' -e '1ivpath %.so ${
           stdenv.lib.concatStringsSep ":" 
-            (map (s : s + "/lib") (buildInputs ++ [stdenv.gcc.libc]))
+            (map (s : s + "/lib") (buildInputs ++ [stdenv.cc.libc]))
         }' ';'
       '';
 

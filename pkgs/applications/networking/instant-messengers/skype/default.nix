@@ -14,7 +14,7 @@ stdenv.mkDerivation rec {
 
   buildInputs = [
     stdenv.glibc
-    stdenv.gcc.gcc
+    stdenv.cc.gcc
     libXv
     libXext
     libX11

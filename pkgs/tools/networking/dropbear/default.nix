@@ -23,7 +23,7 @@ stdenv.mkDerivation rec {
   crossAttrs = {
     # This works for uclibc, at least.
     preConfigure = ''
-      makeFlags=VPATH=`cat ${stdenv.gccCross}/nix-support/orig-libc`/lib
+      makeFlags=VPATH=`cat ${stdenv.ccCross}/nix-support/orig-libc`/lib
     '';
   };
 

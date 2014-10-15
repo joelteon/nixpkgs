@@ -19,7 +19,7 @@ rec {
   };
 
   gccLinkStatic = wrapGCCWith (import ../../build-support/gcc-wrapper) uclibcForBzip2
-    stdenv.gcc.gcc;
+    stdenv.cc.gcc;
   stdenvLinkStatic = overrideGCC stdenv gccLinkStatic;
 
   curlStatic = import ../../tools/networking/curl {

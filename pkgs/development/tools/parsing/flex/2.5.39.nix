@@ -12,9 +12,7 @@ stdenv.mkDerivation {
 
   propagatedNativeBuildInputs = [ m4 ];
 
-  postConfigure = stdenv.lib.optionalString stdenv.isDarwin ''
-    sed -i Makefile -e 's/-no-undefined//;'
-  '';
+  NIX_CFLAGS_COMPILE = "-v";
 
   crossAttrs = {
     preConfigure = ''

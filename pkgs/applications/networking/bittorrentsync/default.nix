@@ -9,7 +9,7 @@ let
     else if stdenv.system == "i686-linux" then "110k6cq6l3nr1gak2ri6i1kwis78r3zc1ilbipgcccdczf9fnx7p"
     else throw "Bittorrent Sync for: ${stdenv.system} not supported!";
 
-  libPath = stdenv.lib.makeLibraryPath [ stdenv.gcc.libc ];
+  libPath = stdenv.lib.makeLibraryPath [ stdenv.cc.libc ];
 in
 stdenv.mkDerivation rec {
   name = "btsync-${version}";

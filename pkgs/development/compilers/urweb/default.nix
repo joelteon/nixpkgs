@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "0l4zhvdy2fdvhihyl4gl09v8q4w05b1k0c6h4k8281px96d5ljgr";
   };
 
-  buildInputs = [ stdenv.gcc file openssl mlton mysql postgresql sqlite ];
+  buildInputs = [ stdenv.cc file openssl mlton mysql postgresql sqlite ];
 
   prePatch = ''
     sed -e 's@/usr/bin/file@${file}/bin/file@g' -i configure
@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   preConfigure =
     ''
-      export CC="${stdenv.gcc}/bin/gcc";
+      export CC="${stdenv.cc}/bin/gcc";
       export CCARGS="-I$out/include \
                       -L${mysql}/lib/mysql -L${postgresql}/lib -L${sqlite}/lib";
 

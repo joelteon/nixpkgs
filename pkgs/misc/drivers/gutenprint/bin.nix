@@ -38,7 +38,7 @@ stdenv.mkDerivation {
 
   phases = "buildPhase";
 
-  libPath = stdenv.lib.makeLibraryPath [ stdenv.gcc.gcc zlib ];
+  libPath = stdenv.lib.makeLibraryPath [ stdenv.cc.gcc zlib ];
 
   buildPhase = ''
     ar -x $src data.tar.gz

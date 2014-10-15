@@ -102,7 +102,7 @@ rec {
           stdenv = stage0.stdenv;
           curl = bootstrapTools;
         };
-        inherit gcc;
+        cc = gcc;
         # Having the proper 'platform' in all the stdenvs allows getting proper
         # linuxHeaders for example.
         extraAttrs = extraAttrs // { inherit platform; };
@@ -258,8 +258,8 @@ rec {
 
     shell = stage4.pkgs.bash + "/bin/bash";
 
-    gcc = (wrapGCC rec {
-      gcc = stage4.stdenv.gcc.gcc;
+    cc = (wrapGCC rec {
+      gcc = stage4.stdenv.cc.gcc;
       libc = stage4.pkgs.glibc;
       inherit (stage4.pkgs) binutils coreutils;
       name = "";
@@ -274,7 +274,7 @@ rec {
     };
 
     overrides = pkgs: {
-      inherit gcc;
+      inherit cc;
       inherit (stage4.pkgs)
         gzip bzip2 xz bash binutils coreutils diffutils findutils gawk
         glibc gnumake gnused gnutar gnugrep gnupatch patchelf

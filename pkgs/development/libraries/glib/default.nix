@@ -7,7 +7,7 @@
 
 with stdenv.lib;
 
-assert !stdenv.isDarwin -> stdenv.gcc.gcc != null;
+assert stdenv.cc ? gcc;
 
 # TODO:
 # * Add gio-module-fam
@@ -82,7 +82,7 @@ stdenv.mkDerivation rec {
   preCheck = optionalString doCheck
     # libgcc_s.so.1 must be installed for pthread_cancel to work
     # also point to the glib/.libs path
-    '' export LD_LIBRARY_PATH="${stdenv.gcc.gcc}/lib:$NIX_BUILD_TOP/${name}/glib/.libs:$LD_LIBRARY_PATH"
+    '' export LD_LIBRARY_PATH="${stdenv.cc.gcc}/lib:$NIX_BUILD_TOP/${name}/glib/.libs:$LD_LIBRARY_PATH"
        export TZDIR="${tzdata}/share/zoneinfo"
        export XDG_CACHE_HOME="$TMP"
        export XDG_RUNTIME_HOME="$TMP"

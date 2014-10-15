@@ -9,7 +9,7 @@ rec {
 
   buildInputs = [fpc gtk glib libXi inputproto 
     libX11 xproto libXext xextproto pango atk
-    stdenv.gcc makeWrapper gdk_pixbuf];
+    stdenv.cc makeWrapper gdk_pixbuf];
   configureFlags = [];
   makeFlags = [
     "LAZARUS_INSTALL_DIR=$out/lazarus/"

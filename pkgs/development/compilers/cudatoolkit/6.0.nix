@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     gtk2 glib fontconfig freetype unixODBC alsaLib
   ];
 
-  rpath = "${stdenv.lib.makeLibraryPath runtimeDependencies}:${stdenv.gcc.gcc}/lib64";
+  rpath = "${stdenv.lib.makeLibraryPath runtimeDependencies}:${stdenv.cc.gcc}/lib64";
 
   unpackPhase = ''
     sh $src --keep --noexec

@@ -28,7 +28,6 @@ let
       description = "Apple developer tools ${name}";
       maintainers = with maintainers; [ copumpkin ];
       platforms   = platforms.darwin;
-      license     = licenses.unfree;
     };
   };
 in rec {

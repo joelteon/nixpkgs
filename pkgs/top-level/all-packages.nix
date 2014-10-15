@@ -3702,9 +3702,9 @@ let
   win32hello = callPackage ../development/compilers/visual-c++/test { };
 
   wrapGCCWith = gccWrapper: glibc: baseGCC: gccWrapper {
-    nativeTools = stdenv ? gcc && stdenv.cc.nativeTools;
-    nativeLibc = stdenv ? gcc && stdenv.cc.nativeLibc;
-    nativePrefix = if stdenv ? gcc then stdenv.cc.nativePrefix else "";
+    nativeTools = stdenv ? cc && stdenv.cc.nativeTools;
+    nativeLibc = stdenv ? cc && stdenv.cc.nativeLibc;
+    nativePrefix = if stdenv ? cc then stdenv.cc.nativePrefix else "";
     gcc = baseGCC;
     libc = glibc;
     shell = bash;
@@ -5089,7 +5089,7 @@ let
   gmpxx = appendToName "with-cxx" (gmp.override { cxx = true; });
 
   # The GHC bootstrap binaries link against libgmp.so.3, which is in GMP 4.x.
-  gmp4 = dropCxx (callPackage ../development/libraries/gmp/4.3.2.nix { });
+  gmp4 = callPackage ../development/libraries/gmp/4.3.2.nix { };
 
   gmp51 = callPackage ../development/libraries/gmp/5.1.x.nix { };
 

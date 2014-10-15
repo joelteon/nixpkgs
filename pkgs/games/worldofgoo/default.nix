@@ -45,9 +45,9 @@ stdenv.mkDerivation rec {
   phases = "unpackPhase installPhase";
 
   # XXX: stdenv.lib.makeLibraryPath doesn't pick up /lib64
-  libPath = stdenv.lib.makeLibraryPath [ stdenv.gcc.gcc stdenv.gcc.libc ] 
+  libPath = stdenv.lib.makeLibraryPath [ stdenv.cc.gcc stdenv.cc.libc ] 
     + ":" + stdenv.lib.makeLibraryPath [libX11 libXext libXau libxcb libXdmcp SDL SDL_mixer libvorbis mesa ]
-    + ":" + stdenv.gcc.gcc + "/lib64";
+    + ":" + stdenv.cc.gcc + "/lib64";
 
   installPhase = ''
     mkdir -p $out/libexec/2dboy/WorldOfGoo/

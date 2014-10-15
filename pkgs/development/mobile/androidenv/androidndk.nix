@@ -29,7 +29,7 @@ stdenv.mkDerivation rec {
     find $out \( \
         \( -type f -a -name "*.so*" \) -o \
         \( -type f -a -perm +0100 \) \
-        \) -exec patchelf --set-interpreter ${stdenv.gcc.libc}/lib/ld-*so.? \
+        \) -exec patchelf --set-interpreter ${stdenv.cc.libc}/lib/ld-*so.? \
         --set-rpath ${zlib}/lib:${ncurses}/lib {} \;
   '';
 }
