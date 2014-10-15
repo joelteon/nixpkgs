@@ -12,7 +12,8 @@ stdenv.mkDerivation {
 
   propagatedNativeBuildInputs = [ m4 ];
 
-  NIX_CFLAGS_COMPILE = "-v";
+  NIX_CFLAGS_LINK = stdenv.lib.optionalString stdenv.isDarwin
+    "-undefined dynamic_lookup";
 
   crossAttrs = {
     preConfigure = ''
