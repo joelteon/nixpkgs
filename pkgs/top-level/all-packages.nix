@@ -398,6 +398,10 @@ let
     inherit stdenv;
   };
 
+  substituteAllFiles = import ../build-support/substitute-files/substitute-all-files.nix {
+    inherit stdenv;
+  };
+
   replaceDependency = import ../build-support/replace-dependency.nix {
     inherit runCommand nix lib;
   };
@@ -472,6 +476,8 @@ let
   };
 
   apt-offline = callPackage ../tools/misc/apt-offline { };
+
+  apulse = callPackage ../misc/apulse { };
 
   archivemount = callPackage ../tools/filesystems/archivemount { };
 
@@ -612,6 +618,8 @@ let
 
   bitbucket-cli = pythonPackages.bitbucket-cli;
 
+  blink = callPackage ../applications/networking/instant-messengers/blink { };
+
   blockdiag = pythonPackages.blockdiag;
 
   bmon = callPackage ../tools/misc/bmon { };
@@ -661,6 +669,8 @@ let
   datamash = callPackage ../tools/misc/datamash { };
 
   direnv = callPackage ../tools/misc/direnv { };
+
+  discount = callPackage ../tools/text/discount { };
 
   ditaa = callPackage ../tools/graphics/ditaa { };
 
@@ -1398,13 +1408,6 @@ let
 
   httptunnel = callPackage ../tools/networking/httptunnel { };
 
-  # FIXME: This Hydra snapshot is outdated and depends on the `nixPerl',
-  # which no longer exists.
-  #
-  # hydra = callPackage ../development/tools/misc/hydra {
-  #   nix = nixUnstable;
-  # };
-
   iasl = callPackage ../development/compilers/iasl { };
 
   icecast = callPackage ../servers/icecast { };
@@ -1496,6 +1499,8 @@ let
   lockfileProgs = callPackage ../tools/misc/lockfile-progs { };
 
   logstash = callPackage ../tools/misc/logstash { };
+
+  logstash-contrib = callPackage ../tools/misc/logstash/contrib.nix { };
 
   logstash-forwarder = callPackage ../tools/misc/logstash-forwarder { };
 
@@ -1591,6 +1596,8 @@ let
   lzop = callPackage ../tools/compression/lzop { };
 
   maildrop = callPackage ../tools/networking/maildrop { };
+
+  mailsend = callPackage ../tools/networking/mailsend { };
 
   mailpile = callPackage ../applications/networking/mailreaders/mailpile { };
 
@@ -1863,7 +1870,7 @@ let
   openobex = callPackage ../tools/bluetooth/openobex { };
 
   openopc = callPackage ../tools/misc/openopc {
-    pythonFull = python27Full.override {
+    pythonFull = python27FullBuildEnv.override {
       extraLibs = [ python27Packages.pyro3 ];
     };
   };
@@ -2690,19 +2697,6 @@ let
 
   xmltv = callPackage ../tools/misc/xmltv { };
 
-  xmobar = let haskellPackagesExt = haskellPackages.override {
-      extension = self : super : {
-        # We need to disable tests unfortunately because doctest
-        # does not work with transformers-overrides, because it
-        # uses the GHC API.
-        cabal = super.cabal.override { enableCheckPhase = false; };
-
-        transformers = self.transformers_0_4_1_0;
-        mtl = self.mtl_2_2_1;
-      };
-    };
-    in haskellPackagesExt.callPackage ../applications/misc/xmobar {};
-
   xmpppy = builderDefsPackage (import ../development/python-modules/xmpppy) {
     inherit python setuptools;
   };
@@ -2839,7 +2833,10 @@ let
   cryptol1 = lowPrio (callPackage ../development/compilers/cryptol/1.8.x.nix {});
   cryptol2 = with haskellPackages_ghc763; callPackage ../development/compilers/cryptol/2.0.x.nix {
     Cabal = Cabal_1_18_1_3;
-    cabalInstall = cabalInstall_1_18_0_3;
+    cabalInstall = cabalInstall_1_18_0_3.override {
+      network = network_2_5_0_0;
+      HTTP = HTTP.override { network = network_2_5_0_0; };
+    };
     process = process_1_2_0_0;
   };
 
@@ -3818,7 +3815,6 @@ let
   lua = lua5;
 
   lua51Packages = recurseIntoAttrs (callPackage ./lua-packages.nix { lua = lua5_1; });
-
   lua52Packages = recurseIntoAttrs (callPackage ./lua-packages.nix { lua = lua5_2; });
 
   luaPackages = lua52Packages;
@@ -3911,8 +3907,10 @@ let
   polyml = callPackage ../development/compilers/polyml { };
 
   pure = callPackage ../development/interpreters/pure {
-    llvm = llvm_33 ;
+    llvm = llvm_34 ;
   };
+
+  pure-gsl = callPackage ../development/pure-modules/pure-gsl { };
 
   python = python2;
   python2 = python27;
@@ -3923,9 +3921,6 @@ let
   python2Packages = python27Packages;
   python3Packages = python34Packages;
 
-  pythonFull = python2Full;
-  python2Full = python27Full;
-
   python26 = callPackage ../development/interpreters/python/2.6 { db = db47; };
   python27 = callPackage ../development/interpreters/python/2.7 { };
   python32 = callPackage ../development/interpreters/python/3.2 { };
@@ -3934,18 +3929,24 @@ let
 
   pypy = callPackage ../development/interpreters/pypy/2.4 { };
 
-  python26Full = callPackage ../development/interpreters/python/wrapper.nix {
-    extraLibs = [];
-    postBuild = "";
-    python = python26;
+  pythonFull = python2Full;
+  python2Full = python27Full;
+  python26Full = python26.override {
+    includeModules = true;
+  };
+  python27Full = python27.override {
+    includeModules = true;
+  };
+  python26FullBuildEnv = callPackage ../development/interpreters/python/wrapper.nix {
+    python = python26Full;
     inherit (python26Packages) recursivePthLoader;
   };
-  python27Full = callPackage ../development/interpreters/python/wrapper.nix {
-    extraLibs = [];
-    postBuild = "";
-    python = python27;
+  python27FullBuildEnv = callPackage ../development/interpreters/python/wrapper.nix {
+    python = python27Full;
     inherit (python27Packages) recursivePthLoader;
   };
+  pythonFullBuildEnv = python2FullBuildEnv;
+  python2FullBuildEnv = python27FullBuildEnv;
 
   python2nix = callPackage ../tools/package-management/python2nix { };
 
@@ -4839,6 +4840,8 @@ let
 
   directfb = callPackage ../development/libraries/directfb { };
 
+  dlib = callPackage ../development/libraries/dlib { };
+
   dotconf = callPackage ../development/libraries/dotconf { };
 
   dssi = callPackage ../development/libraries/dssi {};
@@ -5001,6 +5004,8 @@ let
   gd = callPackage ../development/libraries/gd { };
 
   gdal = callPackage ../development/libraries/gdal { };
+
+  gdcm = callPackage ../development/libraries/gdcm { };
 
   ggz_base_libs = callPackage ../development/libraries/ggz_base_libs {};
 
@@ -5395,6 +5400,8 @@ let
     usePulseAudio = config.pulseaudio or true;
   };
 
+  libantlr3c = callPackage ../development/libraries/libantlr3c {};
+
   libarchive = callPackage ../development/libraries/libarchive { };
 
   libass = callPackage ../development/libraries/libass { };
@@ -5669,6 +5676,8 @@ let
   librevisa = callPackage ../development/libraries/librevisa { };
 
   libsamplerate = callPackage ../development/libraries/libsamplerate { };
+
+  libsieve = callPackage ../development/libraries/libsieve { };
 
   libspectre = callPackage ../development/libraries/libspectre { };
 
@@ -6106,6 +6115,9 @@ let
 
   miro = callPackage ../applications/video/miro {
     inherit (pythonPackages) pywebkitgtk pysqlite pycurl mutagen;
+    avahi = avahi.override {
+      withLibdnssdCompat = true;
+    };
   };
 
   mkvtoolnix = callPackage ../applications/video/mkvtoolnix { };
@@ -6973,34 +6985,34 @@ let
   # Therefore we do not recurse into attributes here, in contrast to
   # python27Packages. `nix-env -iA python26Packages.nose` works
   # regardless.
-  python26Packages = import ./python-packages.nix {
-    inherit pkgs;
+  python26Packages = callPackage ./python-packages.nix {
     python = python26;
+    self = python26Packages;
   };
 
-  python27Packages = lib.hiPrioSet (recurseIntoAttrs (import ./python-packages.nix {
-    inherit pkgs;
+  python27Packages = lib.hiPrioSet (recurseIntoAttrs (callPackage ./python-packages.nix {
     python = python27;
+    self = python27Packages;
   }));
 
-  python32Packages = import ./python-packages.nix {
-    inherit pkgs;
+  python32Packages = callPackage ./python-packages.nix {
     python = python32;
+    self = python32Packages;
   };
 
-  python33Packages = recurseIntoAttrs (import ./python-packages.nix {
-    inherit pkgs;
+  python33Packages = recurseIntoAttrs (callPackage ./python-packages.nix {
     python = python33;
+    self = python33Packages;
   });
 
-  python34Packages = recurseIntoAttrs (import ./python-packages.nix {
-    inherit pkgs;
+  python34Packages = recurseIntoAttrs (callPackage ./python-packages.nix {
     python = python34;
+    self = python34Packages;
   });
 
-  pypyPackages = recurseIntoAttrs (import ./python-packages.nix {
-    inherit pkgs;
+  pypyPackages = recurseIntoAttrs (callPackage ./python-packages.nix {
     python = pypy;
+    self = pypyPackages;
   });
 
   foursuite = callPackage ../development/python-modules/4suite { };
@@ -7164,6 +7176,12 @@ let
   ejabberd = callPackage ../servers/xmpp/ejabberd {
     erlang = erlangR16;
   };
+
+  prosody = recurseIntoAttrs (
+    callPackage ../servers/xmpp/prosody {
+      lua5 = lua5_1;
+      inherit (lua51Packages) luasocket luasec luaexpat luafilesystem luabitop;
+  });
 
   elasticmq = callPackage ../servers/elasticmq { };
 
@@ -7958,7 +7976,7 @@ let
 
   # The current default kernel / kernel modules.
   linux = linuxPackages.kernel;
-  linuxPackages = linuxPackages_3_12;
+  linuxPackages = linuxPackages_3_14;
 
   # Update this when adding the newest kernel major version!
   linux_latest = pkgs.linux_3_17;
@@ -8068,6 +8086,10 @@ let
   numactl = callPackage ../os-specific/linux/numactl { };
 
   gocode = callPackage ../development/tools/gocode { };
+
+  gotags = callPackage ../development/tools/gotags { };
+
+  golint = callPackage ../development/tools/golint { };
 
   gogoclient = callPackage ../os-specific/linux/gogoclient { };
 
@@ -9108,6 +9130,8 @@ let
 
   fribid = callPackage ../applications/networking/browsers/mozilla-plugins/fribid { };
 
+  fritzing = callPackage ../applications/science/electronics/fritzing { };
+
   fvwm = callPackage ../applications/window-managers/fvwm { };
 
   geany = callPackage ../applications/editors/geany { };
@@ -10128,9 +10152,7 @@ let
 
   seafile-client = callPackage ../applications/networking/seafile-client { };
 
-  seeks = callPackage ../tools/networking/p2p/seeks {
-    opencv = opencv_2_1;
-  };
+  seeks = callPackage ../tools/networking/p2p/seeks { };
 
   seg3d = callPackage ../applications/graphics/seg3d {
     wxGTK = wxGTK28.override { unicode = false; };
@@ -10240,7 +10262,8 @@ let
 
   stp = callPackage ../applications/science/logic/stp {};
 
-  stumpwm = lispPackages.stumpwm;
+  stumpwm = callPackage ../applications/window-managers/stumpwm {};
+  stumpwmContrib = callPackage ../applications/window-managers/stumpwm/contrib.nix {};
 
   sublime = callPackage ../applications/editors/sublime { };
 
@@ -10285,6 +10308,8 @@ let
   synergy = callPackage ../applications/misc/synergy { };
 
   tabbed = callPackage ../applications/window-managers/tabbed { };
+
+  tagainijisho = callPackage ../applications/office/tagainijisho {};
 
   tahoelafs = callPackage ../tools/networking/p2p/tahoe-lafs {
     inherit (pythonPackages) twisted foolscap simplejson nevow zfec
@@ -10598,13 +10623,17 @@ let
       ++ optional (cfg.enableGambatte or false) gambatte
       ++ optional (cfg.enableGenesisPlusGX or false) genesis-plus-gx
       ++ optional (cfg.enableMupen64Plus or false) mupen64plus
+      ++ optional (cfg.enableNestopia or false) nestopia
       ++ optional (cfg.enablePicodrive or false) picodrive
       ++ optional (cfg.enablePrboom or false) prboom
       ++ optional (cfg.enablePPSSPP or false) ppsspp
+      ++ optional (cfg.enableQuickNES or false) quicknes
       ++ optional (cfg.enableScummVM or false) scummvm
+      ++ optional (cfg.enableSnes9x or false) snes9x
       ++ optional (cfg.enableSnes9xNext or false) snes9x-next
       ++ optional (cfg.enableStella or false) stella
       ++ optional (cfg.enableVbaNext or false) vba-next
+      ++ optional (cfg.enableVbaM or false) vba-m
       );
 
   wrapRetroArch = { retroarch }: import ../misc/emulators/retroarch/wrapper.nix {
@@ -10617,6 +10646,7 @@ let
     plugins = let inherit (lib) optional; in with xbmcPlugins;
       ([]
       ++ optional (config.xbmc.enableAdvancedLauncher or false) advanced-launcher
+      ++ optional (config.xbmc.enableGenesis or false) genesis
       ++ optional (config.xbmc.enableSVTPlay or false) svtplay
       );
   };
@@ -10931,6 +10961,12 @@ let
 
   gtypist = callPackage ../games/gtypist { };
 
+  hedgewars = callPackage ../games/hedgewars {
+    inherit (haskellPackages) ghc network vector utf8String bytestringShow
+      random hslogger dataenc;
+    SDL = SDL_pulseaudio;
+  };
+
   hexen = callPackage ../games/hexen { };
 
   icbm3d = callPackage ../games/icbm3d { };
@@ -10952,6 +10988,8 @@ let
   lincity_ng = callPackage ../games/lincity/ng.nix {};
 
   mars = callPackage ../games/mars { };
+
+  megaglest = callPackage ../games/megaglest {};
 
   micropolis = callPackage ../games/micropolis { };
 
@@ -11534,19 +11572,32 @@ let
 
   mkCoqPackages_8_4 = self: let callPackage = newScope self; in {
 
+    bedrock = callPackage ../development/coq-modules/bedrock {};
+
     containers = callPackage ../development/coq-modules/containers {};
 
+    coqExtLib = callPackage ../development/coq-modules/coq-ext-lib {};
+
+    domains = callPackage ../development/coq-modules/domains {};
+
+    heq = callPackage ../development/coq-modules/heq {};
+
     mathcomp = callPackage ../development/coq-modules/mathcomp {};
+
+    paco = callPackage ../development/coq-modules/paco {};
 
     ssreflect = callPackage ../development/coq-modules/ssreflect {};
 
     tlc = callPackage ../development/coq-modules/tlc {};
+
+    ynot = callPackage ../development/coq-modules/ynot {};
 
   };
 
   coqPackages = recurseIntoAttrs (mkCoqPackages_8_4 coqPackages);
 
   cvc3 = callPackage ../applications/science/logic/cvc3 {};
+  cvc4 = callPackage ../applications/science/logic/cvc4 {};
 
   ekrhyper = callPackage ../applications/science/logic/ekrhyper {};
 
@@ -11959,17 +12010,19 @@ let
 
   retroarchBare = callPackage ../misc/emulators/retroarch { };
 
-  retroarchBareMaster = callPackage ../misc/emulators/retroarch/master.nix { };
-
-  retroarch = wrapRetroArch { retroarch = retroarchBareMaster; };
+  retroarch = wrapRetroArch { retroarch = retroarchBare; };
 
   libretro = recurseIntoAttrs (callPackage ../misc/emulators/retroarch/cores.nix {
-    retroarch = retroarchBareMaster;
+    retroarch = retroarchBare;
   });
 
   rssglx = callPackage ../misc/screensavers/rss-glx { };
 
+  runit = callPackage ../tools/system/runit { };
+
   xlockmore = callPackage ../misc/screensavers/xlockmore { };
+
+  sails = callPackage ../misc/sails { };
 
   samsungUnifiedLinuxDriver = import ../misc/cups/drivers/samsung {
     inherit fetchurl stdenv;
@@ -12025,7 +12078,7 @@ let
     inherit builderDefs zlib bzip2 ncurses libpng ed lesstif ruby potrace
       gd t1lib freetype icu perl expat curl xz pkgconfig zziplib texinfo
       libjpeg bison python fontconfig flex poppler libpaper graphite2
-      makeWrapper;
+      makeWrapper gmp mpfr xpdf;
     inherit (xlibs) libXaw libX11 xproto libXt libXpm
       libXmu libXext xextproto libSM libICE;
     ghostscript = ghostscriptX;

@@ -205,6 +205,20 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
+  Appperlbrew = buildPerlPackage {
+    name = "App-perlbrew-0.71";
+    src = fetchurl {
+      url = mirror://cpan/authors/id/G/GU/GUGOD/App-perlbrew-0.71.tar.gz;
+      sha256 = "5e5de7c4d5235556f6cd5c5e56751fb2d73821ef58390e457db4253542224a09";
+    };
+    buildInputs = [ pkgs.curl IOAll PathClass TestException TestNoWarnings TestOutput TestSpec ];
+    propagatedBuildInputs = [ CPANPerlReleases CaptureTiny DevelPatchPerl locallib ];
+    meta = {
+      description = "Manage perl installations in your $HOME";
+      license = "mit";
+    };
+  };
+
   ArrayCompare = buildPerlPackage {
     name = "Array-Compare-1.18";
     src = fetchurl {
@@ -229,7 +243,7 @@ let self = _self // overrides; _self = with self; {
     name = "Archive-Zip-1.16";
     src = fetchurl {
       url = http://tarballs.nixos.org/Archive-Zip-1.16.tar.gz;
-      md5 = "e28dff400d07b1659d659d8dde7071f1";
+      sha256 = "1ghgs64by3ybjlb0bj65kxysb03k72i7iwmw63g41bj175l44ima";
     };
   };
 
@@ -1164,13 +1178,13 @@ let self = _self // overrides; _self = with self; {
   };
 
   ClassAccessorGrouped = buildPerlPackage {
-    name = "Class-Accessor-Grouped-0.10010";
+    name = "Class-Accessor-Grouped-0.10012";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RI/RIBASUSHI/Class-Accessor-Grouped-0.10010.tar.gz;
-      sha256 = "1hlfjfhagsksskv01viq1z14wlr0i4xl3nvznvq1qrnqwqxs4qi1";
+      url = mirror://cpan/authors/id/R/RI/RIBASUSHI/Class-Accessor-Grouped-0.10012.tar.gz;
+      sha256 = "c4613ee3307939f47a9afd40e8b173f3a22f501c3b139799aa030f01b627e7fe";
     };
-    buildInputs = [ TestException ];
-    propagatedBuildInputs = [ ClassXSAccessor ModuleRuntime SubName ];
+    buildInputs = [ ClassXSAccessor DevelHide PackageStash SubName TestException ];
+    propagatedBuildInputs = [ ModuleRuntime ];
     meta = {
       description = "Lets you build groups of accessors";
       license = "perl";
@@ -1679,6 +1693,19 @@ let self = _self // overrides; _self = with self; {
     meta = {
       homepage = https://github.com/dagolden/CPAN-Meta-YAML;
       description = "Read and write a subset of YAML for CPAN Meta files";
+      license = "perl";
+    };
+  };
+
+  CPANPerlReleases = buildPerlPackage {
+    name = "CPAN-Perl-Releases-1.94";
+    src = fetchurl {
+      url = mirror://cpan/authors/id/B/BI/BINGOS/CPAN-Perl-Releases-1.94.tar.gz;
+      sha256 = "ebc70640541f5b6d1191ba7bf958d369d9e21be0908ac812663047290b95fdf2";
+    };
+    meta = {
+      homepage = https://github.com/bingos/cpan-perl-releases;
+      description = "Mapping Perl releases on CPAN to the location of the tarballs";
       license = "perl";
     };
   };
@@ -2335,6 +2362,20 @@ let self = _self // overrides; _self = with self; {
     propagatedBuildInputs = [ IOCaptureOutput ];
   };
 
+  DevelPatchPerl = buildPerlPackage {
+    name = "Devel-PatchPerl-1.28";
+    src = fetchurl {
+      url = mirror://cpan/authors/id/B/BI/BINGOS/Devel-PatchPerl-1.28.tar.gz;
+      sha256 = "03085cd6a8b565a4f789c838e8208a8377e0d1aeb7f5becc3b0d3219409d6b82";
+    };
+    propagatedBuildInputs = [ Filepushd ];
+    meta = {
+      homepage = https://github.com/bingos/devel-patchperl;
+      description = "Patch perl source a la Devel::PPPort's buildperl.pl";
+      license = "perl";
+    };
+  };
+
   DevelSizeMe = buildPerlPackage {
     name = "Devel-SizeMe-0.19";
     src = fetchurl {
@@ -2395,14 +2436,13 @@ let self = _self // overrides; _self = with self; {
   };
 
   DBIxClass = buildPerlPackage {
-    name = "DBIx-Class-0.08250";
+    name = "DBIx-Class-0.082801";
     src = fetchurl {
-      url = mirror://cpan/authors/id/R/RI/RIBASUSHI/DBIx-Class-0.08250.tar.gz;
-      sha256 = "0nsqvj34klc9pf4l5kj3nqkq7agbsn11ys4115100awf7gxjbad6";
+      url = mirror://cpan/authors/id/R/RI/RIBASUSHI/DBIx-Class-0.082801.tar.gz;
+      sha256 = "889d6f9139d8e73f5524dfa211019126042e84cb7a0ec30cd2ed7d315d73484b";
     };
-    patches = [ ../development/perl-modules/dbix-class-fix-tests.patch ];
-    buildInputs = [ DBDSQLite PackageStash TestException TestWarn TestDeep ];
-    propagatedBuildInputs = [ ClassAccessorGrouped ClassC3Componentised ClassInspector ClassMethodModifiers ConfigAny ContextPreserve DataCompare DataDumperConcise DataPage DBI DevelGlobalDestruction HashMerge ImportInto ModuleFind Moo MROCompat namespaceclean PathClass ScopeGuard SQLAbstract strictures SubName TryTiny ];
+    buildInputs = [ DBDSQLite PackageStash TestDeep TestException TestWarn ];
+    propagatedBuildInputs = [ ClassAccessorGrouped ClassC3Componentised ClassInspector ConfigAny ContextPreserve DBI DataDumperConcise DataPage DevelGlobalDestruction HashMerge MROCompat ModuleFind Moo PathClass SQLAbstract ScopeGuard SubName TryTiny namespaceclean ];
     meta = {
       homepage = http://www.dbix-class.org/;
       description = "Extensible and flexible object <-> relational mapper";
@@ -4973,6 +5013,18 @@ let self = _self // overrides; _self = with self; {
     };
   };
 
+  locallib = buildPerlPackage {
+    name = "local-lib-2.000014";
+    src = fetchurl {
+      url = mirror://cpan/authors/id/H/HA/HAARG/local-lib-2.000014.tar.gz;
+      sha256 = "ae63356ab780c5a3aa46287b48daea748a3dd021d9b52dff8bf480b43787fa2b";
+    };
+    meta = {
+      description = "Create and use a local lib/ for perl modules with PERL5LIB";
+      license = "perl";
+    };
+  };
+
   LockFileSimple = buildPerlPackage rec {
     name = "LockFile-Simple-0.208";
     src = fetchurl {
@@ -6754,17 +6806,17 @@ let self = _self // overrides; _self = with self; {
   };
 
   PackageStash = buildPerlPackage {
-    name = "Package-Stash-0.34";
+    name = "Package-Stash-0.37";
     src = fetchurl {
-      url = mirror://cpan/authors/id/D/DO/DOY/Package-Stash-0.34.tar.gz;
-      sha256 = "1674zs96ndq3czs6v8xkdqqz4fnka0i2835nnns9zbw2q01yirj6";
+      url = mirror://cpan/authors/id/D/DO/DOY/Package-Stash-0.37.tar.gz;
+      sha256 = "06ab05388f9130cd377c0e1d3e3bafeed6ef6a1e22104571a9e1d7bfac787b2c";
     };
     buildInputs = [ DistCheckConflicts TestFatal TestRequires ];
-    propagatedBuildInputs = [ DistCheckConflicts ModuleImplementation PackageDeprecationManager ];
+    propagatedBuildInputs = [ DistCheckConflicts ModuleImplementation ];
     meta = {
       homepage = http://metacpan.org/release/Package-Stash;
       description = "Routines for manipulating stashes";
-      license = "perl5";
+      license = "perl";
     };
   };
 
@@ -7617,13 +7669,13 @@ let self = _self // overrides; _self = with self; {
   };
 
   SQLAbstract = buildPerlPackage {
-    name = "SQL-Abstract-1.73";
+    name = "SQL-Abstract-1.80";
     src = fetchurl {
-      url = mirror://cpan/authors/id/F/FR/FREW/SQL-Abstract-1.73.tar.gz;
-      sha256 = "081ppyvsc66yshmfr9q9v7hp9g58725nnibd771i9g153vzs49kb";
+      url = mirror://cpan/authors/id/R/RI/RIBASUSHI/SQL-Abstract-1.80.tar.gz;
+      sha256 = "de4d0507fca0c6340c17867abca0632017bd56594443e67ea6ace826ba9a07a2";
     };
-    buildInputs = [ TestException TestWarn ];
-    propagatedBuildInputs = [ ClassAccessorGrouped GetoptLongDescriptive HashMerge ];
+    buildInputs = [ TestDeep TestException TestWarn ];
+    propagatedBuildInputs = [ HashMerge MROCompat Moo ];
     meta = {
       description = "Generate SQL from Perl data structures";
       license = "perl";
@@ -8850,6 +8902,19 @@ let self = _self // overrides; _self = with self; {
   };
 
   TestSimple = null;
+
+  TestSpec = buildPerlPackage {
+    name = "Test-Spec-0.47";
+    src = fetchurl {
+      url = mirror://cpan/authors/id/P/PH/PHILIP/Test-Spec-0.47.tar.gz;
+      sha256 = "e425c0b9efa3c7e21496d31a607d072a63e31988c3d298a8c1fd7d145cc0681e";
+    };
+    propagatedBuildInputs = [ PackageStash TestDeep TestTrap TieIxHash ];
+    meta = {
+      description = "Write tests in a declarative specification style";
+      license = "perl";
+    };
+  };
 
   TestSubCalls = buildPerlPackage rec {
     name = "Test-SubCalls-1.09";

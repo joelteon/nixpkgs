@@ -8,8 +8,8 @@
 
 cabal.mkDerivation (self: {
   pname = "warp";
-  version = "3.0.2";
-  sha256 = "1a60k7i6xpij5v8kj4akj5k0icizna6z0si6z1rcw99ln9hhqmya";
+  version = "3.0.2.3";
+  sha256 = "16fwqd3nnw0bpa2a8ki0ynxif8a90qa20fvw5fmyngyvysl8g7qn";
   buildDepends = [
     autoUpdate blazeBuilder caseInsensitive hashable httpDate httpTypes
     network simpleSendfile streamingCommons text unixCompat void wai
