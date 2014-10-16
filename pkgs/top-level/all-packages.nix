@@ -2288,7 +2288,7 @@ let
 
   sourceHighlight = callPackage ../tools/text/source-highlight {
     # Boost 1.54 causes the "test_regexranges" test to fail
-    boost = boost149;
+    boost = boost144;
   };
 
   spaceFM = callPackage ../applications/misc/spacefm { };
@@ -4789,7 +4789,7 @@ let
 
   coredumper = callPackage ../development/libraries/coredumper { };
 
-  ctl = dropCxx (callPackage ../development/libraries/ctl { });
+  ctl = callPackage ../development/libraries/ctl { };
 
   cpp-netlib = callPackage ../development/libraries/cpp-netlib { };
 
@@ -5212,12 +5212,7 @@ let
 
   pangox_compat = callPackage ../development/libraries/pangox-compat { };
 
-  gdk_pixbuf = callPackage ../development/libraries/gdk-pixbuf {
-    # workaround signal 10 in gdk_pixbuf tests
-    stdenv = if stdenv.isDarwin
-      then clangStdenv
-      else stdenv;
-  };
+  gdk_pixbuf = callPackage ../development/libraries/gdk-pixbuf { };
 
   granite = callPackage ../development/libraries/granite { };
 
@@ -5304,7 +5299,7 @@ let
 
   ilixi = callPackage ../development/libraries/ilixi { };
 
-  ilmbase = dropCxx (callPackage ../development/libraries/ilmbase { });
+  ilmbase = callPackage ../development/libraries/ilmbase { };
 
   imlib = callPackage ../development/libraries/imlib {
     libpng = libpng12;
@@ -5482,7 +5477,7 @@ let
 
   libdc1394avt = callPackage ../development/libraries/libdc1394avt { };
 
-  libdevil = dropCxx (callPackage ../development/libraries/libdevil { });
+  libdevil = callPackage ../development/libraries/libdevil { };
 
   libdiscid = callPackage ../development/libraries/libdiscid { };
 
@@ -5899,12 +5894,7 @@ let
 
   libtommath = callPackage ../development/libraries/libtommath { };
 
-  libtorrentRasterbar = callPackage ../development/libraries/libtorrent-rasterbar {
-    # fix "unrecognized option -arch" error
-    stdenv = if stdenv.isDarwin
-      then clangStdenv
-      else stdenv;
-  };
+  libtorrentRasterbar = callPackage ../development/libraries/libtorrent-rasterbar { };
 
   libtoxcore = callPackage ../development/libraries/libtoxcore { };
 
@@ -5937,11 +5927,7 @@ let
 
   libusb = callPackage ../development/libraries/libusb {};
 
-  libusb1 = callPackage ../development/libraries/libusb1 {
-    stdenv = if stdenv.isDarwin
-      then clangStdenv
-      else stdenv;
-  };
+  libusb1 = callPackage ../development/libraries/libusb1 { };
 
   libunwind = if stdenv.isDarwin
     then callPackage ../development/libraries/libunwind/native.nix {}
@@ -6083,9 +6069,7 @@ let
     grsecEnabled = true;
     llvm = llvm_34;
   });
-  mesa_glu =  mesaDarwinOr (callPackage ../development/libraries/mesa-glu {
-    llvm = llvm_34;
-  });
+  mesa_glu =  mesaDarwinOr (callPackage ../development/libraries/mesa-glu { });
   mesa_drivers = mesaDarwinOr (
     let mo = mesa_noglu.override {
       grsecEnabled = config.grsecurity or false;
@@ -6244,13 +6228,9 @@ let
   # this ctl version is needed by openexr_viewers
   openexr_ctl = callPackage ../development/libraries/openexr_ctl { };
 
-  openexr = dropCxx (callPackage ../development/libraries/openexr { });
+  openexr = callPackage ../development/libraries/openexr { };
 
-  openldap = callPackage ../development/libraries/openldap {
-    stdenv = if stdenv.isDarwin
-      then clangStdenv
-      else stdenv;
-  };
+  openldap = callPackage ../development/libraries/openldap { };
 
   openlierox = callPackage ../games/openlierox { };
 
@@ -6332,12 +6312,7 @@ let
 
   popt = callPackage ../development/libraries/popt { };
 
-  portaudio = callPackage ../development/libraries/portaudio {
-    # resolves a variety of compile-time errors
-    stdenv = if stdenv.isDarwin
-      then clangStdenv
-      else stdenv;
-  };
+  portaudio = callPackage ../development/libraries/portaudio { };
 
   portaudioSVN = callPackage ../development/libraries/portaudio/svn-head.nix { };
 
@@ -6383,11 +6358,6 @@ let
     mesa = mesa_noglu;
     inherit (pkgs.gnome) libgnomeui GConf gnome_vfs;
     cups = if stdenv.isLinux then cups else null;
-
-    # resolve unrecognised flag '-fconstant-cfstrings' errors
-    stdenv = if stdenv.isDarwin
-      then clangStdenv
-      else stdenv;
   };
 
   qt48Full = appendToName "full" (qt48.override {
@@ -6505,11 +6475,6 @@ let
     alsaSupport = (!stdenv.isDarwin);
     x11Support = true;
     pulseaudioSupport = stdenv.isDarwin; # better go through ALSA
-
-    # resolve the unrecognized -fpascal-strings option error
-    stdenv = if stdenv.isDarwin
-      then clangStdenv
-      else stdenv;
   };
 
   # Fixes major problems with choppy sound in MLT / Kdenlive / Shotcut
@@ -6517,12 +6482,7 @@ let
 
   SDL_gfx = callPackage ../development/libraries/SDL_gfx { };
 
-  SDL_image = callPackage ../development/libraries/SDL_image {
-    # provide an Objective-C compiler
-    stdenv = if stdenv.isDarwin
-      then clangStdenv
-      else stdenv;
-  };
+  SDL_image = callPackage ../development/libraries/SDL_image { };
 
   SDL_mixer = callPackage ../development/libraries/SDL_mixer { };
 
@@ -6781,21 +6741,11 @@ let
   wxGTK29 = callPackage ../development/libraries/wxGTK-2.9/default.nix {
     inherit (gnome) GConf;
     withMesa = lib.elem system lib.platforms.mesaPlatforms;
-
-    # use for Objective-C++ compiler
-    stdenv = if stdenv.isDarwin
-      then clangStdenv
-      else stdenv;
   };
 
   wxGTK30 = callPackage ../development/libraries/wxGTK-3.0/default.nix {
     inherit (gnome) GConf;
     withMesa = lib.elem system lib.platforms.mesaPlatforms;
-
-    # use for Objective-C++ compiler
-    stdenv = if stdenv.isDarwin
-      then clangStdenv
-      else stdenv;
   };
 
   wtk = callPackage ../development/libraries/wtk { };
@@ -7095,11 +7045,7 @@ let
 
   sip = pythonPackages.sip;
 
-  pyqt4 = callPackage ../development/python-modules/pyqt/4.x.nix {
-    stdenv = if stdenv.isDarwin
-      then clangStdenv
-      else stdenv;
-  };
+  pyqt4 = callPackage ../development/python-modules/pyqt/4.x.nix { };
 
   pysideApiextractor = callPackage ../development/python-modules/pyside/apiextractor.nix { };
 
@@ -8822,7 +8768,7 @@ let
 
   compiz = callPackage ../applications/window-managers/compiz {
     inherit (gnome) GConf ORBit2 metacity;
-    boost = boost149; # https://bugs.launchpad.net/compiz/+bug/1131864
+    boost = boost144; # https://bugs.launchpad.net/compiz/+bug/1131864
   };
 
   coriander = callPackage ../applications/video/coriander {
@@ -8965,9 +8911,7 @@ let
     withX = false;
   }));
 
-  emacs24Macport = lowPrio (callPackage ../applications/editors/emacs-24/macport.nix {
-    stdenv = pkgs.clangStdenv;
-  });
+  emacs24Macport = lowPrio (callPackage ../applications/editors/emacs-24/macport.nix { });
 
   emacsPackages = emacs: self: let callPackage = newScope self; in rec {
     inherit emacs;
@@ -9586,7 +9530,7 @@ let
 
   k3d = callPackage ../applications/graphics/k3d {
     inherit (pkgs.gnome2) gtkglext;
-    boost = boost149;
+    boost = boost144;
   };
 
   keepnote = callPackage ../applications/office/keepnote {
@@ -9773,7 +9717,7 @@ let
 
   monotone = callPackage ../applications/version-management/monotone {
     lua = lua5;
-    boost = boost149;
+    boost = boost144;
   };
 
   monotoneViz = builderDefsPackage (import ../applications/version-management/monotone-viz/mtn-head.nix) {
@@ -10302,7 +10246,7 @@ let
 
   sublime3 = lowPrio (callPackage ../applications/editors/sublime3 { });
 
-  subversionNix = callPackage ../applications/version-management/subversion/default.nix {
+  subversion = callPackage ../applications/version-management/subversion/default.nix {
     bdbSupport = true;
     httpServer = false;
     httpSupport = true;
@@ -10313,12 +10257,6 @@ let
     httpd = apacheHttpd;
     sasl = cyrus_sasl;
   };
-
-  subversionNative = callPackage ../applications/version-management/subversion/native.nix {};
-
-  subversion = if stdenv.isDarwin
-    then subversionNative
-    else subversionNix;
 
   subversionClient = appendToName "client" (subversion.override {
     bdbSupport = false;

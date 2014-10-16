@@ -9,6 +9,7 @@
 cabal.mkDerivation (self: {
   pname = "imagemagick";
   version = "0.0.3.5";
+  sha256 = "0vwmx86wpxr1f5jrwlqpvrb94dbrm0jjdqq6bppfnfyppd3s1mmq";
   isLibrary = true;
   isExecutable = true;
   doCheck = false;

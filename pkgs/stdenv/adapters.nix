@@ -8,7 +8,7 @@ rec {
 
 
   # Override the compiler in stdenv for specific packages.
-  overrideGCC = stdenv: gcc: stdenv.override { inherit gcc; };
+  overrideGCC = stdenv: gcc: stdenv.override { cc = gcc; };
 
 
   # Add some arbitrary packages to buildInputs for specific packages.

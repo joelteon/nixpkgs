@@ -1,5 +1,7 @@
 { stdenv }:
 
+assert stdenv.isDarwin;
+
 stdenv.mkDerivation {
   name = "libunwind-native";
 
@@ -8,7 +10,7 @@ stdenv.mkDerivation {
 
   installPhase = ''
     mkdir -p $out/lib
-    cat ${/usr/lib/system/libunwind.dylib} > $out/lib/libunwind.dylib
+    cat /usr/lib/system/libunwind.dylib > $out/lib/libunwind.dylib
   '';
 
   meta.platforms = stdenv.lib.platforms.darwin;
