@@ -1,8 +1,8 @@
 args : with args;
 rec {
   src = fetchurl {
-    url = mirror://debian/pool/main/t/texlive-bin/texlive-bin_2014.20140528.34243.orig.tar.xz;
-    sha256 = "0nh8hfayyf60nm4z8zyclrbc3792c62azgsvrwxnl28iq223200s";
+    url = mirror://debian/pool/main/t/texlive-bin/texlive-bin_2014.20140926.35254.orig.tar.xz;
+    sha256 = "1c39x059jhn5jsy6i9j3akjbkm1kmmzssy1jyi1aw20rl2vp86w3";
   };
 
   texmfVersion = "2014.20140927";
@@ -114,7 +114,8 @@ rec {
   buildInputs = [ zlib bzip2 ncurses libpng flex bison libX11 libICE xproto
     freetype t1lib gd libXaw icu ghostscript ed libXt libXpm libXmu libXext
     xextproto perl libSM ruby expat curl libjpeg python fontconfig xz pkgconfig
-    poppler libpaper graphite2 lesstif zziplib harfbuzz texinfo potrace ]
+    poppler libpaper graphite2 lesstif zziplib harfbuzz texinfo potrace gmp mpfr
+    xpdf ]
     ++ stdenv.lib.optionals stdenv.isDarwin [ makeWrapper ]
     ;
 
@@ -144,7 +145,7 @@ rec {
     description = "A TeX distribution";
     homepage    = http://www.tug.org/texlive;
     license     = stdenv.lib.licenses.gpl2;
-    maintainers = with maintainers; [ lovek323 raskin ];
+    maintainers = with maintainers; [ lovek323 raskin jwiegley ];
     platforms   = platforms.unix;
   };
 }
