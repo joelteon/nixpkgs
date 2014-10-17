@@ -132,4 +132,5 @@
 , "bower2nix"
 , "bower"
 , "resolve"
+, "wiki"
 ]
