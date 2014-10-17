@@ -12,15 +12,11 @@ stdenv.mkDerivation rec {
     sha256 = "0nw66r92dr24vy9k4lw17bkv8x5nlzn6wx9hq4y2dvzgig3w2qd9";
   };
 
-  # The compiler on Darwin crashes with an internal error while building the
-  # C++ interface. Disabling optimizations on that platform remedies the
-  # problem. In case we ever update the Darwin GCC version, the exception for
-  # that platform ought to be removed.
   configureFlags = ''
     --enable-jit
     ${if unicodeSupport then "--enable-unicode-properties" else ""}
     ${if !cplusplusSupport then "--disable-cpp" else ""}
-  '' + optionalString stdenv.isDarwin "CXXFLAGS=-O0";
+  '';
 
   doCheck = with stdenv; !(isCygwin || isFreeBSD);
     # XXX: test failure on Cygwin

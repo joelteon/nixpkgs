@@ -47,6 +47,8 @@ stdenv.mkDerivation rec {
 
     sed -e '5,$d' -i contrib/sb-bsd-sockets/tests.lisp
     sed -e '5,$d' -i contrib/sb-simple-streams/*test*.lisp
+  '' + stdenv.lib.optionalString stdenv.isDarwin ''
+    substituteInPlace src/runtime/Config.x86-64-darwin --replace gcc clang
   '';
 
   preBuild = ''
