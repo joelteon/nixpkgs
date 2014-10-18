@@ -7,7 +7,7 @@ let
   libPath = stdenv.lib.makeLibraryPath [ stdenv.cc.libc ];
 
   fixBin = x: ''
-    patchelf --interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" \
+    patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
       --set-rpath ${libPath} ${x}
   '';
 in

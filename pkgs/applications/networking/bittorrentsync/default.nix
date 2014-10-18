@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     mkdir -p "$out/bin/"
     cp -r "btsync" "$out/bin/"
 
-    patchelf --interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" \
+    patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
       --set-rpath ${libPath} "$out/bin/btsync"
   '';
 

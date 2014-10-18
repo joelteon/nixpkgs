@@ -30,8 +30,8 @@ in stdenv.mkDerivation rec {
     mkdir -p $out/share/node-webkit
     cp -R * $out/share/node-webkit
 
-    patchelf --set-interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" $out/share/node-webkit/nw
-    patchelf --set-interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" $out/share/node-webkit/nwsnapshot
+    patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $out/share/node-webkit/nw
+    patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $out/share/node-webkit/nwsnapshot
 
     ln -s ${udev}/lib/libudev.so $out/share/node-webkit/libudev.so.0
 

@@ -99,7 +99,7 @@ stdenv.mkDerivation rec {
 
   fixupPhase = ''
     for x in bin/cryptol bin/edif2verilog bin/copy-iverilog bin/symbolic_netlist bin/jaig bin/vvp-galois bin/lss libexec/jss; do
-      patchelf --interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" \
+      patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
         --set-rpath "$out/lib:${libPath}" $out/$x
       patchelf --shrink-rpath $out/$x
     done
