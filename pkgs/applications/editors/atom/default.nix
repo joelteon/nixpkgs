@@ -33,9 +33,9 @@ in stdenv.mkDerivation rec {
     ar p $src data.tar.gz | tar -C $out -xz ./usr
     mv $out/usr/* $out/
     rm -r $out/usr/
-    patchelf --set-interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" \
+    patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
       $out/share/atom/atom
-    patchelf --set-interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" \
+    patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
       $out/share/atom/resources/app/apm/node_modules/atom-package-manager/bin/node
     wrapProgram $out/bin/atom \
       --prefix "LD_LIBRARY_PATH" : "${atomEnv}/lib:${atomEnv}/lib64"

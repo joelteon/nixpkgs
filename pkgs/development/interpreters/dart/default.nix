@@ -9,7 +9,7 @@ stdenv.mkDerivation {
     mkdir -p $out
     cp -R * $out/
     echo $libPath
-    patchelf --interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" \
+    patchelf --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
              --set-rpath $libPath \
              $out/bin/dart
     

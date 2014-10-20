@@ -35,7 +35,7 @@ stdenv.mkDerivation {
     chmod +x $out/bin/teamviewer
 
     patchelf --set-rpath "${stdenv.cc.gcc}/lib64:${stdenv.cc.gcc}/lib:${libX11}/lib:${libXext}/lib:${libXau}/lib:${libXdamage}/lib:${libXfixes}/lib" $out/share/teamviewer8/tv_bin/teamviewerd
-    patchelf --set-interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" $out/share/teamviewer8/tv_bin/teamviewerd
+    patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $out/share/teamviewer8/tv_bin/teamviewerd
     ln -s $out/share/teamviewer8/tv_bin/teamviewerd $out/bin/
   '';
 

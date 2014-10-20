@@ -18,7 +18,7 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     install -D influxdb $out/bin/influxdb
-    patchelf --set-interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" $out/bin/influxdb
+    patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $out/bin/influxdb
     wrapProgram "$out/bin/influxdb" \
         --prefix LD_LIBRARY_PATH : "${stdenv.cc.gcc}/lib:${stdenv.cc.gcc}/lib64:${zlib}/lib:${bzip2}/lib"
 

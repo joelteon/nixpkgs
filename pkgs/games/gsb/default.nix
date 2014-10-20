@@ -36,7 +36,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/bin
 
     patchelf \
-      --interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" \
+      --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
       --set-rpath $libPath \
       ./GSB.bin.$arch
 

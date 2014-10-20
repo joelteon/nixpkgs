@@ -30,8 +30,8 @@ in stdenv.mkDerivation rec {
   };
 
   patchPhase = ''
-    patchelf --set-interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" Browser/firefox
-    patchelf --set-interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" Tor/tor
+    patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" Browser/firefox
+    patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" Tor/tor
   '';
 
   doCheck = true;

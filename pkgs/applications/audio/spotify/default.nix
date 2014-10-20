@@ -118,11 +118,11 @@ stdenv.mkDerivation {
       ln -s $out/spotify-client/spotify $out/bin/spotify
 
       patchelf \
-        --interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" \
+        --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
         --set-rpath $rpath $out/spotify-client/spotify
 
       patchelf \
-        --interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" \
+        --interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
         --set-rpath $rpath $out/spotify-client/Data/SpotifyHelper
 
       dpkg-deb -x ${qt4webkit} ./

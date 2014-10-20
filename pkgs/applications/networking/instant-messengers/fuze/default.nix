@@ -28,7 +28,7 @@ stdenv.mkDerivation {
     cp -R usr/lib/fuzebox $out/lib
 
     patchelf \
-      --set-interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" \
+      --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" \
       --set-rpath $out/lib/fuzebox:$libPath \
       $out/lib/fuzebox/FuzeLinuxApp
 

@@ -59,7 +59,7 @@ stdenv.mkDerivation rec {
     gcc -shared -fPIC -DEAGLE_PATH=\"$out/eagle-${version}\" ${./eagle_fixer.c} -o "$out"/lib/eagle_fixer.so -ldl
 
     # Make wrapper script
-    dynlinker="$(cat $NIX_GCC/nix-support/dynamic-linker)"
+    dynlinker="$(cat $NIX_CC/nix-support/dynamic-linker)"
     mkdir -p "$out"/bin
     cat > "$out"/bin/eagle << EOF
     #!${stdenv.shell}

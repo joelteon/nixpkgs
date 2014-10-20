@@ -78,7 +78,7 @@ stdenv.mkDerivation {
     patchShebangs $out/bin
 
     for file in $(find $d -type f); do
-        patchelf --set-interpreter "$(cat $NIX_GCC/nix-support/dynamic-linker)" $file || true
+        patchelf --set-interpreter "$(cat $NIX_CC/nix-support/dynamic-linker)" $file || true
         patchelf --set-rpath ${rpath}:\$ORIGIN $file || true
     done
 
