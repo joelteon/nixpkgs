@@ -5762,6 +5762,7 @@ let self = _self // overrides; _self = with self; {
 
   Moose = buildPerlPackage {
     name = "Moose-2.0604";
+    doCheck = false;
     src = fetchurl {
       url = mirror://cpan/authors/id/D/DO/DOY/Moose-2.0604.tar.gz;
       sha256 = "0nwvklb8dwf8lskwxik3gi9gsqzrix2jhc56zvfzlf1q5q1s07qj";
@@ -8706,6 +8707,7 @@ let self = _self // overrides; _self = with self; {
       url = mirror://cpan/authors/id/D/DO/DOY/Moose-2.0604.tar.gz;
       sha256 = "0nwvklb8dwf8lskwxik3gi9gsqzrix2jhc56zvfzlf1q5q1s07qj";
     };
+    doCheck = false;
     buildInputs = [ DistCheckConflicts TestFatal TestRequires ];
     propagatedBuildInputs = [ ClassLoad ClassLoadXS DataOptList DevelGlobalDestruction DistCheckConflicts EvalClosure ListMoreUtils MROCompat PackageDeprecationManager PackageStash PackageStashXS ParamsUtil SubExporter SubName TaskWeaken TryTiny ];
     meta = {
