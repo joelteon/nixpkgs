@@ -46,8 +46,6 @@ stdenv.mkDerivation rec {
 
   installFlags = stdenv.lib.optionalString docSupport "install-doc";
 
-  CFLAGS = stdenv.lib.optionalString stdenv.isDarwin "-mmacosx-version-min=10.7";
-
   postInstall = ''
     # Bundler tries to create this directory
     mkdir -pv $out/${passthru.gemPath}

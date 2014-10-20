@@ -13,11 +13,6 @@ stdenv.mkDerivation {
       docsrc/*.xml
   '';
 
-  configureFlags = [
-    "--with-libintl-prefix=/usr"
-    "--with-libiconv-prefix=/usr"
-  ];
-
   setupHook = ./setup-hook.sh;
 
   buildInputs = [ xmlto docbook_xml_dtd_412 libxslt docbook_xsl ];
