@@ -14,14 +14,12 @@ stdenv.mkDerivation rec {
   patchPhase = ''
     substituteInPlace Makefile \
       --replace /usr/local $out
+
+    substituteInPlace src/Makefile --replace gcc cc
   '' + stdenv.lib.optionalString (stdenv.cc.libc != null)
   ''
     substituteInPlace Makefile \
       --replace ldconfig ${stdenv.cc.libc}/sbin/ldconfig
-  '' + stdenv.lib.optionalString stdenv.isDarwin
-  ''
-    substituteInPlace src/Makefile \
-      --replace gcc clang
   '';
 
   configurePhase = false;
