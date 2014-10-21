@@ -102,6 +102,8 @@ let
   };
 
   ipython = callPackage ../shells/ipython {
+    inherit pythonPackages;
+
     qtconsoleSupport = !pkgs.stdenv.isDarwin; # qt is not supported on darwin
     pylabQtSupport = !pkgs.stdenv.isDarwin;
     pylabSupport = !pkgs.stdenv.isDarwin; # cups is not supported on darwin
@@ -1291,6 +1293,7 @@ let
   cjson = buildPythonPackage rec {
     name = "python-cjson-${version}";
     version = "1.1.0";
+    disabled = isPy3k || isPyPy;
 
     src = pkgs.fetchurl {
       url = "https://pypi.python.org/packages/source/p/python-cjson/${name}.tar.gz";
@@ -5860,6 +5863,16 @@ let
 
   });
 
+  pagerduty = buildPythonPackage rec {
+    name = "pagerduty-${version}";
+    version = "0.2.1";
+
+    src = pkgs.fetchurl {
+        url = "https://pypi.python.org/packages/source/p/pagerduty/pagerduty-${version}.tar.gz";
+        md5 = "8109a330d16751a7f4041c0ccedec787";
+    };
+  };
+
   pandas = buildPythonPackage rec {
     name = "pandas-0.14.0";
 
@@ -6178,7 +6191,7 @@ let
       md5 = "56b6614499aacb7d6b5983c4914daea7";
     };
 
-    buildInputs = with self; [ pkgs.freetype pkgs.libjpeg pkgs.zlib pkgs.libtiff pkgs.libwebp ];
+    buildInputs = with self; [ pkgs.freetype pkgs.libjpeg pkgs.zlib pkgs.libtiff pkgs.libwebp pkgs.tcl ];
 
     # NOTE: we use LCMS_ROOT as WEBP root since there is not other setting for webp.
     preConfigure = ''
@@ -6187,10 +6200,9 @@ let
               s|^JPEG_ROOT =.*$|JPEG_ROOT = _lib_include("${pkgs.libjpeg}")|g ;
               s|^ZLIB_ROOT =.*$|ZLIB_ROOT = _lib_include("${pkgs.zlib}")|g ;
               s|^LCMS_ROOT =.*$|LCMS_ROOT = _lib_include("${pkgs.libwebp}")|g ;
-              s|^TIFF_ROOT =.*$|TIFF_ROOT = _lib_include("${pkgs.libtiff}")|g ;'
+              s|^TIFF_ROOT =.*$|TIFF_ROOT = _lib_include("${pkgs.libtiff}")|g ;
+              s|^TCL_ROOT=.*$|TCL_ROOT = _lib_include("${pkgs.tcl}")|g ;'
     '';
-
-
 
     meta = {
       homepage = http://python-imaging.github.com/Pillow;
@@ -6992,6 +7004,18 @@ let
     propagatedBuildInputs = with self; [ kitchen requests bunch paver ];
     doCheck = false;
   });
+
+  python_simple_hipchat = buildPythonPackage rec {
+    name = "python-simple-hipchat-${version}";
+    version = "0.1";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/p/python-simple-hipchat/python-simple-hipchat-${version}.zip";
+      md5 = "3806b3729a021511bac065360832f197";
+    };
+
+    buildInputs = [ pkgs.unzip ];
+  };
 
   python_keyczar = buildPythonPackage rec {
     name = "python-keyczar-0.71c";
@@ -7985,6 +8009,28 @@ let
   };
 
 
+  scapy = buildPythonPackage rec {
+    name = "scapy-2.2.0";
+
+    disabled = isPy3k || isPyPy;
+
+    src = pkgs.fetchurl {
+      url = "http://www.secdev.org/projects/scapy/files/${name}.tar.gz";
+      sha256 = "1bqmp0xglkndrqgmybpwmzkv462mir8qlkfwsxwbvvzh9li3ndn5";
+    };
+
+    propagatedBuildInputs = [ modules.readline ];
+
+    meta = with stdenv.lib; {
+      description = "Powerful interactive network packet manipulation program";
+      homepage = http://www.secdev.org/projects/scapy/;
+      license = licenses.gpl2;
+      platforms = platforms.linux;
+      maintainers = [ maintainers.bjornfor ];
+    };
+  };
+
+
   scipy = buildPythonPackage rec {
     name = "scipy-0.14.0";
 
@@ -8213,7 +8259,7 @@ let
       sha256 = "bec9269cbfa58de4f0849ec79bb7d54eeeed9df8b5fbfa1637fbc68062822847";
     };
 
-    buildInputs = with self; [ pbr pip ];
+    buildInputs = with self; [ pbr pip ] ++ optional isPy26 argparse;
 
     propagatedBuildInputs = with self; [ setuptools ];
 
@@ -10881,6 +10927,33 @@ let
     };
   };
 
+  graphite_pager = buildPythonPackage rec {
+    name = "graphite-pager-${version}";
+    version = "2bbfe91220ec1e0ca1cdf4b5564386482a44ed7d";
+
+    src = pkgs.fetchgit {
+      url = "https://github.com/offlinehacker/graphite-pager.git";
+      sha256 = "aa932f941efe4ed89971fe7572218b020d1a144259739ef78db6397b968eef62";
+      rev = version;
+    };
+
+    buildInputs = with self; [ nose mock ];
+    propagatedBuildInputs = with self; [
+      jinja2 pyyaml redis requests pagerduty 
+      python_simple_hipchat pushbullet
+    ];
+
+    patchPhase = "> requirements.txt";
+    checkPhase = "nosetests";
+
+    meta = {
+      description = "A simple alerting application for Graphite metrics";
+      homepage = https://github.com/seatgeek/graphite-pager;
+      maintainers = [ maintainers.offline ];
+      license = licenses.bsd2;
+    };
+  };
+
 
   pyspotify = buildPythonPackage rec {
     name = "pyspotify-${version}";
@@ -11122,6 +11195,18 @@ let
       license = "bsd";
       maintainers = [ stdenv.lib.maintainers.matejc ];
     };
+  };
+
+  pushbullet = buildPythonPackage rec {
+    name = "pushbullet.py-${version}";
+    version = "0.5.0";
+
+    src = pkgs.fetchurl {
+      url = "https://pypi.python.org/packages/source/p/pushbullet.py/pushbullet.py-0.5.0.tar.gz";
+      md5 = "36c83ba5f7d5208bb86c00eba633f921";
+    };
+
+    propagatedBuildInputs = with self; [requests websocket_client python_magic ];
   };
 
   power = buildPythonPackage rec {

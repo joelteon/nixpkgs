@@ -1,16 +1,16 @@
-{ stdenv, stdenvAdapters, fetchFromGitHub, ncurses, gettext,
+{ stdenv, fetchFromGitHub, ncurses, gettext,
   pkgconfig, cscope, python, ruby, tcl, perl, luajit
 }:
 
 stdenv.mkDerivation rec {
   name = "macvim-${version}";
 
-  version = "7.4.355";
+  version = "7.4.479";
 
   src = fetchFromGitHub {
     owner = "genoma";
     repo = "macvim";
-    rev = "c18a61f9723565664ffc2eda9179e96c95860e25";
+    rev = "f9c084b97fa9d5cad2448dfd3eff3d9b7f0fac59";
     sha256 = "190bngg8m4bwqcia7w24gn7mmqkhk0mavxy81ziwysam1f652ymf";
   };
 
@@ -45,6 +45,7 @@ stdenv.mkDerivation rec {
       "--enable-perlinterp=dynamic"
       "--enable-rubyinterp=dynamic"
       "--enable-tclinterp=yes"
+      "--without-local-dir"
       "--with-luajit"
       "--with-lua-prefix=${luajit}"
       "--with-ruby-command=${ruby}/bin/ruby"
@@ -52,6 +53,8 @@ stdenv.mkDerivation rec {
       "--with-tlib=ncurses"
       "--with-compiledby=Nix"
   ];
+
+  makeFlags = ''PREFIX=$(out) CPPFLAGS="-Wno-error"'';
 
   preConfigure = ''
     DEV_DIR=$(/usr/bin/xcode-select -print-path)/Platforms/MacOSX.platform/Developer

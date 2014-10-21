@@ -1,7 +1,5 @@
 { stdenv, lib, fetchurl, fetchhg, bison, glibc, bash, coreutils, makeWrapper, tzdata, iana_etc, perl }:
 
-assert stdenv.cc.gcc != null;
-
 let
   loader386 = "${glibc}/lib/ld-linux.so.2";
   loaderAmd64 = "${glibc}/lib/ld-linux-x86-64.so.2";

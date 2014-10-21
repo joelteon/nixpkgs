@@ -143,8 +143,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   aeson_0_7_0_4 = callPackage ../development/libraries/haskell/aeson/0.7.0.4.nix { blazeBuilder = null; };
   aeson_0_7_0_6 = callPackage ../development/libraries/haskell/aeson/0.7.0.6.nix { blazeBuilder = null; };
-  aeson_0_8_0_1 = callPackage ../development/libraries/haskell/aeson/0.8.0.1.nix { blazeBuilder = null; };
-  aeson = self.aeson_0_8_0_1;
+  aeson_0_8_0_2 = callPackage ../development/libraries/haskell/aeson/0.8.0.2.nix { blazeBuilder = null; };
+  aeson = self.aeson_0_8_0_2;
 
   aesonPretty = callPackage ../development/libraries/haskell/aeson-pretty {};
 
@@ -615,6 +615,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   dbus = callPackage ../development/libraries/haskell/dbus {};
 
+  Decimal = callPackage ../development/libraries/haskell/Decimal {};
+
   deepseq_1_1_0_0 = callPackage ../development/libraries/haskell/deepseq/1.1.0.0.nix {};
   deepseq_1_1_0_2 = callPackage ../development/libraries/haskell/deepseq/1.1.0.2.nix {};
   deepseq_1_2_0_1 = callPackage ../development/libraries/haskell/deepseq/1.2.0.1.nix {};
@@ -813,6 +815,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   extensibleExceptions_0_1_1_3 = callPackage ../development/libraries/haskell/extensible-exceptions/0.1.1.3.nix {};
   extensibleExceptions_0_1_1_4 = callPackage ../development/libraries/haskell/extensible-exceptions/0.1.1.4.nix {};
   extensibleExceptions = self.extensibleExceptions_0_1_1_4;
+
+  extra = callPackage ../development/libraries/haskell/extra {};
 
   failure = callPackage ../development/libraries/haskell/failure {};
 
@@ -1043,7 +1047,9 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   groupoids = callPackage ../development/libraries/haskell/groupoids {};
 
-  hakyll = callPackage ../development/libraries/haskell/hakyll {};
+  hakyll = callPackage ../development/libraries/haskell/hakyll {
+    pandocCiteproc = self.pandocCiteproc_0_4;
+  };
 
   hamlet = callPackage ../development/libraries/haskell/hamlet {};
 
@@ -1204,7 +1210,9 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   hi = callPackage ../development/libraries/haskell/hi {};
 
-  hindent = callPackage ../development/libraries/haskell/hindent {};
+  hindent = callPackage ../development/libraries/haskell/hindent {
+    haskellSrcExts = self.haskellSrcExts_1_15_0_1;
+  };
 
   hint = callPackage ../development/libraries/haskell/hint {};
 
@@ -1244,7 +1252,10 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   hoodleTypes = callPackage ../development/libraries/haskell/hoodle-types {};
 
-  hoogle = callPackage ../development/libraries/haskell/hoogle {};
+  hoogle_4_2_34 = callPackage ../development/libraries/haskell/hoogle/4.2.34.nix { haskellSrcExts = self.haskellSrcExts_1_15_0_1; };
+  hoogle_4_2_36 = callPackage ../development/libraries/haskell/hoogle/4.2.36.nix {};
+  hoogle = self.hoogle_4_2_36;
+
   hoogleLocal = callPackage ../development/libraries/haskell/hoogle/local.nix {};
 
   hopenssl = callPackage ../development/libraries/haskell/hopenssl {};
@@ -1468,7 +1479,12 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   languageHaskellExtract = callPackage ../development/libraries/haskell/language-haskell-extract {};
 
-  lambdabot = callPackage ../development/libraries/haskell/lambdabot {};
+  lambdabot = callPackage ../development/libraries/haskell/lambdabot {
+    haskellSrcExts = self.haskellSrcExts_1_15_0_1;
+    hoogle = self.hoogle_4_2_34.override {
+      haskellSrcExts = self.haskellSrcExts_1_15_0_1;
+    };
+  };
 
   lambdabotWrapper = callPackage ../development/libraries/haskell/lambdabot/wrapper.nix {
     mueval = self.muevalWrapper.override {
@@ -1845,7 +1861,10 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   pandoc = callPackage ../development/libraries/haskell/pandoc {};
 
-  pandocCiteproc = callPackage ../development/libraries/haskell/pandoc-citeproc {};
+  pandocCiteproc_0_4 = callPackage ../development/libraries/haskell/pandoc-citeproc/0.4.nix {};
+  pandocCiteproc_0_5 = callPackage ../development/libraries/haskell/pandoc-citeproc/0.5.nix {};
+  pandocCiteproc_0_6 = callPackage ../development/libraries/haskell/pandoc-citeproc/0.6.nix {};
+  pandocCiteproc = self.pandocCiteproc_0_6;
 
   pandocTypes = callPackage ../development/libraries/haskell/pandoc-types {};
 
@@ -3094,14 +3113,14 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   wordTrie = callPackage ../development/libraries/haskell/word-trie {};
 
-  # You should prefer ‘yiCustom’ over ‘yi’ unless you never plan to
-  # use any external libraries in your config.
+  # This is an unwrapped version of Yi, it will not behave well (no
+  # M-x or reload). Use ‘yiCustom’ instead.
   yi = callPackage ../applications/editors/yi/yi.nix { };
 
   yiContrib = callPackage ../development/libraries/haskell/yi-contrib {};
 
   yiCustom = callPackage ../applications/editors/yi/yi-custom.nix {
-    extraPackages = [];
+    extraPackages = pkgs: [];
   };
 
   yiLanguage = callPackage ../development/libraries/haskell/yi-language {};
@@ -3127,20 +3146,21 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
       buildCommand = ''
       export HOME="$TMPDIR"
-      ${nativePkgs.haskellPackages.cabal2nix}/bin/cabal2nix ${src + "/${name}.cabal"} --sha256=FILTERME \
-          | grep -v FILTERME | sed \
-            -e 's/licenses.proprietary/licenses.unfree/' \
-            -e 's/{ cabal/{ cabal, cabalInstall, cabalDrvArgs ? {}, src/' \
-            -e 's/cabal.mkDerivation (self: {/cabal.mkDerivation (self: cabalDrvArgs \/\/ {/' \
-            -e 's/buildDepends = \[/buildDepends = \[ cabalInstall/' \
-            -e 's/pname = \([^\n]*\)/pname = \1\n  inherit src;\n/'  > $out
+      ${nativePkgs.haskellPackages.cabal2nix}/bin/cabal2nix ${src} \
+          | sed -e 's/licenses.proprietary/licenses.unfree/' > $out
       '';
 
     } // pkgs.lib.optionalAttrs nativePkgs.stdenv.isLinux {
       LANG = "en_US.UTF-8";
       LOCALE_ARCHIVE = "${nativePkgs.glibcLocales}/lib/locale/locale-archive";
     });
-  in callPackage cabalExpr ({ inherit src cabalDrvArgs; } // args);
+  in callPackage cabalExpr {
+    cabal = self.cabal.override {
+      extension = eself: esuper: {
+        buildDepends = [ self.cabalInstall ] ++ esuper.buildDepends;
+      } // cabalDrvArgs;
+    };
+  };
 
   buildLocalCabal = src: name: self.buildLocalCabalWithArgs { inherit src name; };
 
