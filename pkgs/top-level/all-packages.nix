@@ -2168,6 +2168,8 @@ let
 
   rpm = callPackage ../tools/package-management/rpm { };
 
+  rpmextract = callPackage ../tools/archivers/rpmextract { };
+
   rrdtool = callPackage ../tools/misc/rrdtool { };
 
   rtorrent = callPackage ../tools/networking/p2p/rtorrent { };
@@ -2201,6 +2203,8 @@ let
   sablotron = callPackage ../tools/text/xml/sablotron { };
 
   safecopy = callPackage ../tools/system/safecopy { };
+
+  safe-rm = callPackage ../tools/system/safe-rm { };
 
   salut_a_toi = callPackage ../applications/networking/instant-messengers/salut-a-toi {};
 
@@ -3936,7 +3940,7 @@ let
   python2Packages = python27Packages;
   python3Packages = python34Packages;
 
-  python26 = callPackage ../development/interpreters/python/2.6 { 
+  python26 = callPackage ../development/interpreters/python/2.6 {
     db = db47;
     self = python26;
   };
@@ -8928,7 +8932,6 @@ let
     libXaw = xlibs.libXaw;
     Xaw3d = null;
     gconf = null;
-    librsvg = null;
     alsaLib = null;
     imagemagick = null;
   };
@@ -9066,7 +9069,8 @@ let
     stratego = callPackage ../applications/editors/emacs-modes/stratego { };
 
     structuredHaskellMode = callPackage ../applications/editors/emacs-modes/structured-haskell-mode {
-      inherit (haskellPackages) cabal haskellSrcExts;
+      inherit (haskellPackages) cabal ;
+      haskellSrcExts = haskellPackages.haskellSrcExts_1_15_0_1;
     };
 
     sunriseCommander = callPackage ../applications/editors/emacs-modes/sunrise-commander { };
@@ -9213,6 +9217,7 @@ let
   firefox13Wrapper = wrapFirefox { browser = firefox13Pkgs.firefox; };
 
   firefox = callPackage ../applications/networking/browsers/firefox {
+    stdenv = if stdenv.isLinux then useGoldLinker stdenv else stdenv;
     inherit (gnome) libIDL;
     inherit (pythonPackages) pysqlite;
   };
@@ -9781,6 +9786,8 @@ let
   ncmpc = callPackage ../applications/audio/ncmpc { };
 
   ncmpcpp = callPackage ../applications/audio/ncmpcpp { };
+
+  ncmpcppBeta = callPackage ../applications/audio/ncmpcpp/beta.nix { };
 
   normalize = callPackage ../applications/audio/normalize { };
 
@@ -11588,6 +11595,8 @@ let
     coqExtLib = callPackage ../development/coq-modules/coq-ext-lib {};
 
     domains = callPackage ../development/coq-modules/domains {};
+
+    flocq = callPackage ../development/coq-modules/flocq {};
 
     heq = callPackage ../development/coq-modules/heq {};
 

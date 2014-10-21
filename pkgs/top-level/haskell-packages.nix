@@ -396,6 +396,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   charset = callPackage ../development/libraries/haskell/charset {};
 
+  charsetdetectAe = callPackage ../development/libraries/haskell/charsetdetect-ae {};
+
   Chart = callPackage ../development/libraries/haskell/Chart {};
   ChartCairo = callPackage ../development/libraries/haskell/Chart-cairo {};
   ChartDiagrams = callPackage ../development/libraries/haskell/Chart-diagrams {};
@@ -790,7 +792,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   executablePath = callPackage ../development/libraries/haskell/executable-path {};
 
-  Extra = callPackage ../development/libraries/haskell/Extra {};
+  Extra = callPackage ../development/libraries/haskell/Extra-lib {};
 
   fay = callPackage ../development/libraries/haskell/fay {};
 
