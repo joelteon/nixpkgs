@@ -14,9 +14,6 @@ stdenv.mkDerivation {
       --replace "/usr/bin/env python2" "${python}/bin/python"
   '';
 
-  preConfigure = stdenv.lib.optionalString stdenv.isDarwin
-    "unset MACOSX_DEPLOYMENT_TARGET";
-
   meta = {
     description = "Event notification library";
 

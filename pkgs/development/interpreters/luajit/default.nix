@@ -14,6 +14,8 @@ stdenv.mkDerivation rec {
   patchPhase = ''
     substituteInPlace Makefile \
       --replace /usr/local $out
+
+    substituteInPlace src/Makefile --replace gcc cc
   '' + stdenv.lib.optionalString (stdenv.cc.libc != null)
   ''
     substituteInPlace Makefile \
