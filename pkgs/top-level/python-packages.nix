@@ -123,7 +123,7 @@ let
 
   # This is used for NixOps to make sure we won't break it with the next major
   # version of nixpart.
-  nixpart0 = self.nixpart;
+  nixpart0 = callPackage ../tools/filesystems/nixpart/0.4 { };
 
   pitz = callPackage ../applications/misc/pitz { };
 
@@ -6517,6 +6517,7 @@ let
     };
   };
 
+
   pycapnp = buildPythonPackage rec {
     name = "pycapnp-0.4.4";
     disabled = isPyPy || isPy3k;
@@ -6855,6 +6856,17 @@ let
       url = "https://fedorahosted.org/releases/p/y/pyparted/${name}.tar.gz";
       sha256 = "17wq4invmv1nfazaksf59ymqyvgv3i8h4q03ry2az0s9lldyg3dv";
     };
+
+    patches = singleton (pkgs.fetchurl {
+      url = "https://www.redhat.com/archives/pyparted-devel/"
+          + "2014-April/msg00000.html";
+      postFetch = ''
+        sed -i -ne '/<!--X-Body-of-Message-->/,/<!--X-Body-of-Message-End-->/ {
+          s/^<[^>]*>//; /^$/!p
+        }' "$downloadedFile"
+      '';
+      sha256 = "1lakhz3nvx0qacn90bj1nq13zqxphiw4d9dsc44gwa8nj24j2zws";
+    });
 
     postPatch = ''
       sed -i -e 's|/sbin/mke2fs|${pkgs.e2fsprogs}&|' tests/baseclass.py
@@ -8480,11 +8492,11 @@ let
 
 
   six = buildPythonPackage rec {
-    name = "six-1.7.3";
+    name = "six-1.8.0";
 
     src = pkgs.fetchurl {
       url = "http://pypi.python.org/packages/source/s/six/${name}.tar.gz";
-      md5 = "784c6e5541c3c4952de9c0a966a0a80b";
+      md5 = "1626eb24cc889110c38f7e786ec69885";
     };
 
     # error: invalid command 'test'
@@ -8595,7 +8607,21 @@ let
       md5 = "754c5ab9f533e764f931136974b618f1";
     };
 
-    doCheck = false;
+    buildInputs = [ pkgs.bash ];
+
+    preConfigure = ''
+      substituteInPlace test_subprocess32.py \
+        --replace '/usr/' '${pkgs.bash}/'
+    '';
+
+    checkPhase = ''
+      TMP_PREFIX=`pwd`/tmp/$name
+      TMP_INSTALL_DIR=$TMP_PREFIX/lib/${pythonPackages.python.libPrefix}/site-packages
+      PYTHONPATH="$TMP_INSTALL_DIR:$PYTHONPATH"
+      mkdir -p $TMP_INSTALL_DIR
+      python setup.py develop --prefix $TMP_PREFIX
+      python test_subprocess32.py
+    '';
 
     meta = {
       homepage = "https://pypi.python.org/pypi/subprocess32";
@@ -9429,7 +9455,11 @@ let
     preConfigure = "export HOME=$TMPDIR";
 
     buildInputs = with self; [ pbr pip pkgs.which ];
-    propagatedBuildInputs = with self; [ stevedore virtualenv virtualenv-clone ];
+    propagatedBuildInputs = with self; [
+      stevedore
+      virtualenv
+      virtualenv-clone
+    ] ++ optional isPy26 argparse;
 
     patchPhase = ''
       substituteInPlace "virtualenvwrapper.sh" --replace "which" "${pkgs.which}/bin/which"

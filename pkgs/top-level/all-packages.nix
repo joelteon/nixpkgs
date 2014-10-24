@@ -465,6 +465,8 @@ let
 
   ahcpd = callPackage ../tools/networking/ahcpd { };
 
+  aide = callPackage ../tools/security/aide { };
+
   aircrackng = callPackage ../tools/networking/aircrack-ng { };
 
   airfield = callPackage ../tools/networking/airfield { };
@@ -767,6 +769,8 @@ let
     par2Support = (config.bup.par2Support or false);
   };
 
+  byzanz = callPackage ../applications/video/byzanz {};
+
   ori = callPackage ../tools/backup/ori { };
 
   atool = callPackage ../tools/archivers/atool { };
@@ -808,8 +812,6 @@ let
   chkrootkit = callPackage ../tools/security/chkrootkit { };
 
   chocolateDoom = callPackage ../games/chocolate-doom { };
-  # master is here because chocolateDoom v2.0 has broken netplay
-  chocolateDoomMaster = callPackage ../games/chocolate-doom/master.nix { };
 
   chrony = callPackage ../tools/networking/chrony { };
 
@@ -1106,6 +1108,8 @@ let
 
   fcitx-anthy = callPackage ../tools/inputmethods/fcitx/fcitx-anthy.nix { };
 
+  fcitx-configtool = callPackage ../tools/inputmethods/fcitx/fcitx-configtool.nix { };
+
   fcron = callPackage ../tools/system/fcron { };
 
   fdm = callPackage ../tools/networking/fdm {};
@@ -1308,6 +1312,10 @@ let
   };
 
   grub = callPackage_i686 ../tools/misc/grub {
+    buggyBiosCDSupport = config.grub.buggyBiosCDSupport or true;
+  };
+
+  trustedGrub = callPackage_i686 ../tools/misc/grub/trusted.nix {
     buggyBiosCDSupport = config.grub.buggyBiosCDSupport or true;
   };
 
@@ -1536,6 +1544,8 @@ let
   ldapvi = callPackage ../tools/misc/ldapvi { };
 
   ldns = callPackage ../development/libraries/ldns { };
+
+  leafpad = callPackage ../applications/editors/leafpad { };
 
   lftp = callPackage ../tools/networking/lftp { };
 
@@ -1854,6 +1864,8 @@ let
   offlineimap = callPackage ../tools/networking/offlineimap {
     inherit (pythonPackages) sqlite3;
   };
+
+  opencryptoki = callPackage ../tools/security/opencryptoki { };
 
   opendbx = callPackage ../development/libraries/opendbx { };
 
@@ -2638,6 +2650,8 @@ let
   which = callPackage ../tools/system/which { };
 
   wicd = callPackage ../tools/networking/wicd { };
+
+  wipe = callPackage ../tools/security/wipe { };
 
   wkhtmltopdf = callPackage ../tools/graphics/wkhtmltopdf {
     overrideDerivation = lib.overrideDerivation;
@@ -4062,6 +4076,7 @@ let
   tcl = callPackage ../development/interpreters/tcl { };
 
   xulrunner = callPackage ../development/interpreters/xulrunner {
+    stdenv = if stdenv.isLinux then useGoldLinker stdenv else stdenv;
     inherit (gnome) libIDL;
     inherit (pythonPackages) pysqlite;
   };
@@ -4537,6 +4552,8 @@ let
   simpleBuildTool = sbt;
 
   sigrok-cli = callPackage ../development/tools/sigrok-cli { };
+
+  simpleTpmPk11 = callPackage ../tools/security/simple-tpm-pk11 { };
 
   slimerjs = callPackage ../development/tools/slimerjs {};
 
@@ -6597,14 +6614,9 @@ let
 
   srtp_linphone = callPackage ../development/libraries/srtp/linphone.nix { };
 
-  sqlite = lowPrio (callPackage ../development/libraries/sqlite {
-    readline = null;
-    ncurses = null;
-  });
+  sqlite = lowPrio (callPackage ../development/libraries/sqlite { });
 
-  sqliteInteractive = appendToName "interactive" (sqlite.override {
-    inherit readline ncurses;
-  });
+  sqliteInteractive = appendToName "interactive" (sqlite.override { interactive = true; });
 
   sqlcipher = lowPrio (callPackage ../development/libraries/sqlcipher {
     readline = null;
@@ -7974,6 +7986,7 @@ let
       stdenv = stdenv_32bit;
       inherit (gnome) libIDL;
       enableExtensionPack = config.virtualbox.enableExtensionPack or false;
+      pulseSupport = config.pulseaudio or false;
     };
 
     virtualboxGuestAdditions = callPackage ../applications/virtualization/virtualbox/guest-additions { };
@@ -8882,11 +8895,11 @@ let
     enableXft = config.dmenu.enableXft or false;
   };
 
-  dmtx = builderDefsPackage (import ../tools/graphics/dmtx) {
-    inherit libpng libtiff libjpeg imagemagick librsvg
-      pkgconfig bzip2 zlib libtool freetype fontconfig
-      ghostscript jasper xz;
-    inherit (xlibs) libX11;
+  dmenu2 = callPackage ../applications/misc/dmenu2 { };
+
+  dmtx = dmtx-utils;
+
+  dmtx-utils = callPackage (import ../tools/graphics/dmtx-utils) {
   };
 
   docker = callPackage ../applications/virtualization/docker { };
@@ -8990,6 +9003,8 @@ let
     graphvizDot = callPackage ../applications/editors/emacs-modes/graphviz-dot { };
 
     gist = callPackage ../applications/editors/emacs-modes/gist { };
+
+    gitModes = callPackage ../applications/editors/emacs-modes/git-modes { };
 
     haskellMode = callPackage ../applications/editors/emacs-modes/haskell { };
 
@@ -10019,6 +10034,10 @@ let
     startupnotification = libstartup_notification;
   };
 
+  pidginWrapper = callPackage ../applications/networking/instant-messengers/pidgin/wrapper.nix {
+    plugins = [];
+  };
+
   pidginlatex = callPackage ../applications/networking/instant-messengers/pidgin-plugins/pidgin-latex {
     imagemagick = imagemagickBig;
   };
@@ -10144,6 +10163,14 @@ let
     unicode3Support = true;
   };
 
+  # urxvt plugins
+  urxvt_perls = callPackage ../applications/misc/rxvt_unicode-plugins/urxvt-perls { };
+  urxvt_tabbedex = callPackage ../applications/misc/rxvt_unicode-plugins/urxvt-tabbedex { };
+
+  rxvt_unicode_with-plugins = callPackage ../applications/misc/rxvt_unicode/wrapper.nix {
+    plugins = [ urxvt_perls urxvt_tabbedex ];
+  };
+
   sakura = callPackage ../applications/misc/sakura {
     inherit (gnome) vte;
   };
@@ -10200,7 +10227,9 @@ let
                                     })
                                  );
 
-  sxiv = callPackage ../applications/graphics/sxiv { };
+  sxiv = callPackage ../applications/graphics/sxiv {
+    giflib = giflib_5_0;
+  };
 
   bittorrentSync = callPackage ../applications/networking/bittorrentsync { };
 
@@ -10828,6 +10857,7 @@ let
     (let callPackage = newScope pkgs.zathuraCollection; in
       import ../applications/misc/zathura {
         inherit callPackage pkgs fetchurl;
+        stdenv = overrideGCC stdenv gcc49;
         useMupdf = config.zathura.useMupdf or false;
       });
 
@@ -10839,6 +10869,7 @@ let
 
   girara = callPackage ../applications/misc/girara {
     gtk = gtk3;
+    stdenv = overrideGCC stdenv gcc49;
   };
 
   zgrviewer = callPackage ../applications/graphics/zgrviewer {};

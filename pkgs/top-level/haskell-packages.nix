@@ -1312,6 +1312,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   hspecMeta = callPackage ../development/libraries/haskell/hspec-meta {};
 
+  hspecCheckers = callPackage ../development/libraries/haskell/hspec-checkers {};
+
   hstatsd = callPackage ../development/libraries/haskell/hstatsd {};
 
   hsyslog = callPackage ../development/libraries/haskell/hsyslog {};
@@ -1718,6 +1720,7 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   mtl_2_0_1_0 = callPackage ../development/libraries/haskell/mtl/2.0.1.0.nix {};
   mtl_2_1_1 = callPackage ../development/libraries/haskell/mtl/2.1.1.nix {};
   mtl_2_1_2 = callPackage ../development/libraries/haskell/mtl/2.1.2.nix {};
+  mtl_2_1_3_1 = callPackage ../development/libraries/haskell/mtl/2.1.3.1.nix {};
   mtl_2_2_1 = callPackage ../development/libraries/haskell/mtl/2.2.1.nix {};
   mtl = null; # tightly coupled with 'transformers' which is a core package
 
@@ -2776,13 +2779,9 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   void = callPackage ../development/libraries/haskell/void {};
 
-  vty_4_7_5 = callPackage ../development/libraries/haskell/vty/4.7.5.nix {};
-  vty_5_2_3 = callPackage ../development/libraries/haskell/vty/5.2.3.nix {};
-  vty = self.vty_5_2_3;
+  vty = callPackage ../development/libraries/haskell/vty {};
 
-  vtyUi = callPackage ../development/libraries/haskell/vty-ui {
-    vty = self.vty_4_7_5;
-  };
+  vtyUi = callPackage ../development/libraries/haskell/vty-ui {};
 
   wai = callPackage ../development/libraries/haskell/wai {};
 
@@ -3124,6 +3123,10 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   yiCustom = callPackage ../applications/editors/yi/yi-custom.nix {
     extraPackages = pkgs: [];
   };
+
+  yiFuzzyOpen = callPackage ../development/libraries/haskell/yi-fuzzy-open {};
+
+  yiMonokai = callPackage ../development/libraries/haskell/yi-monokai {};
 
   yiLanguage = callPackage ../development/libraries/haskell/yi-language {};
 
