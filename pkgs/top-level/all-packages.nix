@@ -2393,6 +2393,8 @@ let
   # Work In Progress: it doesn't start unless running a daemon as root
   teamviewer8 = lowPrio (callPackage_i686 ../applications/networking/remote/teamviewer/8.nix { });
 
+  teamviewer9 = lowPrio (callPackage_i686 ../applications/networking/remote/teamviewer/9.nix { });
+
   telnet = callPackage ../tools/networking/telnet { };
 
   texmacs = callPackage ../applications/editors/texmacs {
@@ -2528,6 +2530,8 @@ let
   htmlTidy = callPackage ../tools/text/html-tidy { };
 
   html-xml-utils = callPackage ../tools/text/xml/html-xml-utils { };
+
+  rcm = callPackage ../tools/misc/rcm {};
 
   tftp_hpa = callPackage ../tools/networking/tftp-hpa {};
 
@@ -2735,7 +2739,7 @@ let
 
   xvfb_run = callPackage ../tools/misc/xvfb-run { inherit (texFunctions) fontsConf; };
 
-  youtubeDL = callPackage ../tools/misc/youtube-dl { };
+  youtube-dl = callPackage ../tools/misc/youtube-dl { };
 
   zbar = callPackage ../tools/graphics/zbar {
     pygtk = lib.overrideDerivation pygtk (x: {
@@ -3939,10 +3943,7 @@ let
 
   polyml = callPackage ../development/compilers/polyml { };
 
-  pure = callPackage ../development/interpreters/pure {
-    llvm = llvm_34 ;
-  };
-
+  pure = callPackage ../development/interpreters/pure { };
   pure-gsl = callPackage ../development/pure-modules/pure-gsl { };
 
   python = python2;
@@ -4019,15 +4020,18 @@ let
 
   ruby_1_8_7 = callPackage ../development/interpreters/ruby/ruby-1.8.7.nix { };
   ruby_1_9_3 = callPackage ../development/interpreters/ruby/ruby-1.9.3.nix { };
-  ruby_2_0_0 = lowPrio (callPackage ../development/interpreters/ruby/ruby-20.nix { });
-  ruby_2_1_2 = callPackage ../development/interpreters/ruby/ruby-21.nix { };
+  ruby_2_0_0 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.0.0.nix { });
+  ruby_2_1_0 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.0.nix { });
+  ruby_2_1_1 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.1.nix { });
+  ruby_2_1_2 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.2.nix { });
+  ruby_2_1_3 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.3.nix { });
 
   # Ruby aliases
   ruby = ruby_1_9;
   ruby_1_8 = ruby_1_8_7;
   ruby_1_9 = ruby_1_9_3;
   ruby_2_0 = ruby_2_0_0;
-  ruby_2_1 = ruby_2_1_2;
+  ruby_2_1 = ruby_2_1_3;
 
   rubyLibsWith = myruby: callPackage ../development/interpreters/ruby/gems.nix {
     ruby = myruby;
@@ -4259,6 +4263,8 @@ let
   chromedriver = callPackage ../development/tools/selenium/chromedriver { gconf = gnome.GConf; };
 
   chrpath = callPackage ../development/tools/misc/chrpath { };
+
+  chruby = callPackage ../development/tools/misc/chruby { };
 
   "cl-launch" = callPackage ../development/tools/misc/cl-launch {};
 
@@ -9024,6 +9030,8 @@ let
 
     haskellMode = callPackage ../applications/editors/emacs-modes/haskell { };
 
+    hsc3Mode = callPackage ../applications/editors/emacs-modes/hsc3 { };
+
     hol_light_mode = callPackage ../applications/editors/emacs-modes/hol_light { };
 
     htmlize = callPackage ../applications/editors/emacs-modes/htmlize { };
@@ -10050,7 +10058,7 @@ let
     startupnotification = libstartup_notification;
   };
 
-  pidginWrapper = callPackage ../applications/networking/instant-messengers/pidgin/wrapper.nix {
+  pidgin-with-plugins = callPackage ../applications/networking/instant-messengers/pidgin/wrapper.nix {
     plugins = [];
   };
 
@@ -12277,6 +12285,8 @@ let
 
   yandex-disk = callPackage ../tools/filesystems/yandex-disk { };
 
+  zdfmediathk = callPackage ../applications/video/zdfmediathk { };
+
   myEnvFun = import ../misc/my-env {
     inherit substituteAll pkgs;
     inherit (stdenv) mkDerivation;
@@ -12336,6 +12346,7 @@ let
   lttngTools = lttng-tools;  # added 2014-07-31
   lttngUst = lttng-ust;  # added 2014-07-31
   jquery_ui = jquery-ui;  # added 2014-09-07
+  youtubeDL = youtube-dl;  # added 2014-10-26
 
 
 }; in self; in pkgs

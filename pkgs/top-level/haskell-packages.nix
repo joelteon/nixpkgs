@@ -593,6 +593,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   dataLens = callPackage ../development/libraries/haskell/data-lens {};
 
+  dataLensFd = callPackage ../development/libraries/haskell/data-lens-fd {};
+
   dataLensLight = callPackage ../development/libraries/haskell/data-lens-light {};
 
   dataLensTemplate = callPackage ../development/libraries/haskell/data-lens-template {};
@@ -1262,6 +1264,11 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   hopenssl = callPackage ../development/libraries/haskell/hopenssl {};
 
+  hosc = callPackage ../development/libraries/haskell/hosc {
+    binary = self.binary_0_7_2_2;
+    dataBinaryIeee754 = self.dataBinaryIeee754.override { binary = self.binary_0_7_2_2; };
+  };
+
   hostname = callPackage ../development/libraries/haskell/hostname {};
 
   hp2anyCore = callPackage ../development/libraries/haskell/hp2any-core {};
@@ -1271,6 +1278,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   hS3 = callPackage ../development/libraries/haskell/hS3 {};
 
   hsBibutils = callPackage ../development/libraries/haskell/hs-bibutils {};
+
+  hsc3 = callPackage ../development/libraries/haskell/hsc3 {};
 
   hsdns = callPackage ../development/libraries/haskell/hsdns {};
 
@@ -1855,7 +1864,6 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
 
   options = callPackage ../development/libraries/haskell/options {};
 
-  #optparseApplicative_0_9_1_1 = callPackage ../development/libraries/haskell/optparse-applicative/0.9.1.1.nix {};
   optparseApplicative_0_10_0 = callPackage ../development/libraries/haskell/optparse-applicative/0.10.0.nix {};
   optparseApplicative_0_11_0_1 = callPackage ../development/libraries/haskell/optparse-applicative/0.11.0.1.nix {};
   optparseApplicative = self.optparseApplicative_0_11_0_1;
@@ -3118,8 +3126,6 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   # M-x or reload). Use ‘yiCustom’ instead.
   yi = callPackage ../applications/editors/yi/yi.nix { };
 
-  yiContrib = callPackage ../development/libraries/haskell/yi-contrib {};
-
   yiCustom = callPackage ../applications/editors/yi/yi-custom.nix {
     extraPackages = pkgs: [];
   };
@@ -3131,6 +3137,8 @@ self : let callPackage = x : y : modifyPrio (newScope self x y); in
   yiLanguage = callPackage ../development/libraries/haskell/yi-language {};
 
   yiRope = callPackage ../development/libraries/haskell/yi-rope {};
+
+  yiSnippet = callPackage ../development/libraries/haskell/yi-snippet {};
 
   # Tools.
 
