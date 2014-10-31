@@ -25,8 +25,3 @@ after building the subversion derivation:
     find /nix/store/ -name svn -type f \
         | grep -v Developer \
         | while read file; do sudo cp -p /usr/bin/svn $file ; done
-
-## Broken clucene_core
-
-`dovecot` fails to build because `clucene_core` cannot build.  To resolve this
-locally, delete all references to `clucene_core` in the `dovecot` expression.
