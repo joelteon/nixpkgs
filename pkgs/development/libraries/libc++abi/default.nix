@@ -10,7 +10,7 @@ in stdenv.mkDerivation {
     sha256 = "07nmvzw5rcxpaw03c18vkn2mxp0lhn6y4nn57d2vlxi36kcwfbb8";
   };
 
-  NIX_CFLAGS_LINK = "-L${libunwind}/lib";
+  patches = [ ./no-stdc++.patch ./darwin.patch ];
 
   NIX_SKIP_CXX    = "true";
   NIX_SKIP_CXXABI = "true";
@@ -19,11 +19,12 @@ in stdenv.mkDerivation {
 
   postUnpack = ''
     unpackFile ${libcxx.src}
-    unpackFile ${llvm.src}
-    export NIX_CFLAGS_COMPILE+=" -I${libunwind}/include -I$PWD/include"
-    export cmakeFlags="-DLLVM_PATH=$(${coreutils}/bin/readlink -f llvm-*) -DLIBCXXABI_LIBCXX_INCLUDES=$(${coreutils}/bin/readlink -f libcxx-*)/include"
-  '' + stdenv.lib.optionalString stdenv.isDarwin ''
+  '' + lib.optionalString stdenv.isDarwin ''
     export TRIPLE=x86_64-apple-darwin
+    # Hack: NIX_CFLAGS_COMPILE doesn't work here because clang++ isn't
+    # wrapped at this point.
+    export CXX="clang++ -D_LIBCXX_DYNAMIC_FALLBACK=1"
+    unset SDKROOT
   '';
 
   installPhase = if stdenv.isDarwin
@@ -51,7 +52,7 @@ in stdenv.mkDerivation {
     homepage = http://libcxxabi.llvm.org/;
     description = "A new implementation of low level support for a standard C++ library";
     license = "BSD";
-    maintainers = stdenv.lib.maintainers.shlevy;
+    maintainers = [ stdenv.lib.maintainers.shlevy ];
     platforms = stdenv.lib.platforms.unix;
   };
 }

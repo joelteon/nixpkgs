@@ -11,7 +11,6 @@ stdenv.mkDerivation rec {
   buildInputs = [ gmp ];
 
   CFLAGS = "-I${gmp}/include";
-  LDFLAGS = "-L${gmp}/lib";
 
   configureFlags =
     /* Work around a FreeBSD bug that otherwise leads to segfaults in the test suite:

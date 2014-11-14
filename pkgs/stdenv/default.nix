@@ -5,7 +5,7 @@
 # Posix utilities, the GNU C compiler, and so on.  On other systems,
 # we use the native C library.
 
-{ system, allPackages ? import ../.., platform, config }:
+{ system, allPackages ? import ../.., platform, config, lib }:
 
 
 rec {
@@ -28,13 +28,33 @@ rec {
 
   # The Nix build environment.
   stdenvNix = import ./nix {
+    inherit config lib;
+    stdenv = stdenvNative;
+    pkgs = stdenvNativePkgs;
+  };
+
+  stdenvDarwin = import ./darwin {
     inherit config;
     stdenv = stdenvNative;
     pkgs = stdenvNativePkgs;
   };
 
+  stdenvDarwinNaked = import ./darwin {
+    inherit config;
+    stdenv = stdenvNative;
+    pkgs = stdenvNativePkgs;
+    haveLibCxx = false;
+  };
+
+  stdenvDarwin33 = import ./darwin {
+    inherit config;
+    stdenv = stdenvNative;
+    pkgs = stdenvNativePkgs;
+    useClang33 = true;
+  };
+
   # Linux standard environment.
-  stdenvLinux = (import ./linux { inherit system allPackages platform config;}).stdenvLinux;
+  stdenvLinux = (import ./linux { inherit system allPackages platform config lib; }).stdenvLinux;
 
   stdenvDarwin = (import ./darwin { inherit system allPackages platform config;}).stdenvDarwin;
 

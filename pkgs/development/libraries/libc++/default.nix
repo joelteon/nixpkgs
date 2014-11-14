@@ -1,9 +1,9 @@
-{ stdenv, fetchurl, fetchsvn, cmake, libcxxabi, python }:
+{ lib, stdenv, fetchurl, cmake, libcxxabi, fixDarwinDylibNames }:
 
 let
   version = "3.5.0";
 
-in stdenv.mkDerivation rec {
+stdenv.mkDerivation rec {
   name = "libc++-${version}";
 
   src = fetchurl {
@@ -33,11 +33,16 @@ in stdenv.mkDerivation rec {
 
   passthru.abi = libcxxabi;
 
+  # Remove a Makefile that causes many retained dependencies.
+  postInstall = "rm $out/include/c++/v1/Makefile";
+
+  setupHook = ./setup-hook.sh;
+
   meta = {
     homepage = http://libcxx.llvm.org/;
     description = "A new implementation of the C++ standard library, targeting C++11";
     license = "BSD";
-    maintainers = stdenv.lib.maintainers.shlevy;
+    maintainers = [ stdenv.lib.maintainers.shlevy ];
     platforms = stdenv.lib.platforms.unix;
   };
 }

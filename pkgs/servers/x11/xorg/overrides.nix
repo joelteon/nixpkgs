@@ -184,7 +184,7 @@ in
   };
 
   xf86inputsynaptics = attrs: attrs // {
-    buildInputs = attrs.buildInputs ++ [args.mtdev];
+    buildInputs = attrs.buildInputs ++ [args.mtdev args.libevdev];
     installFlags = "sdkdir=\${out}/include/xorg configdir=\${out}/share/X11/xorg.conf.d";
   };
 
@@ -254,7 +254,7 @@ in
         dmxproto /*libdmx not used*/ xf86vidmodeproto
         recordproto libXext pixman libXfont
         damageproto xcmiscproto  bigreqsproto
-        libpciaccess inputproto xextproto randrproto renderproto
+        libpciaccess inputproto xextproto randrproto renderproto presentproto
         dri2proto kbproto xineramaproto resourceproto scrnsaverproto videoproto
       ];
       commonPatches = [ ./xorgserver-xkbcomp-path.patch ./fix-clang.patch ];

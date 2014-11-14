@@ -234,6 +234,10 @@ assert !enableStaticLibraries -> versionOlder "7.7" ghc.version;
                 configureFlags+=" --ghc-option=-pgmPcpphs --ghc-option=-optP--cpp"
               ''}
 
+              ${optionalString self.stdenv.isDarwin ''
+                configureFlags+=" --with-gcc=clang"
+              ''}
+
               echo "configure flags: $extraConfigureFlags $configureFlags"
               ./Setup configure --verbose --prefix="$out" --libdir='$prefix/lib/$compiler' \
                 --libsubdir='$pkgid' $extraConfigureFlags $configureFlags 2>&1 \
