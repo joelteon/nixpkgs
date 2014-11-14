@@ -6,34 +6,34 @@
 # compiler and the linker just "work".
 
 { name ? "", stdenv, nativeTools, nativeLibc, nativePrefix ? ""
-, gcc ? null, libc ? null, binutils ? null, coreutils ? null, shell ? stdenv.shell
+, cc ? null, libc ? null, binutils ? null, coreutils ? null, shell ? stdenv.shell
 , zlib ? null, extraPackages ? []
 }:
 
 with stdenv.lib;
 
 assert nativeTools -> nativePrefix != "";
-assert !nativeTools -> gcc != null && binutils != null && coreutils != null;
+assert !nativeTools -> cc != null && binutils != null && coreutils != null;
 assert !nativeLibc -> libc != null;
 
 # For ghdl (the vhdl language provider to gcc) we need zlib in the wrapper.
-assert gcc.langVhdl or false -> zlib != null;
+assert cc.langVhdl or false -> zlib != null;
 
 let
 
-  gccVersion = (builtins.parseDrvName gcc.name).version;
-  gccName = (builtins.parseDrvName gcc.name).name;
+  ccVersion = (builtins.parseDrvName cc.name).version;
+  ccName = (builtins.parseDrvName cc.name).name;
 
 in
 
 stdenv.mkDerivation {
   name =
-    (if name != "" then name else gccName + "-wrapper") +
-    (if gcc != null && gccVersion != "" then "-" + gccVersion else "");
+    (if name != "" then name else ccName + "-wrapper") +
+    (if cc != null && ccVersion != "" then "-" + ccVersion else "");
 
   preferLocalBuild = true;
 
-  inherit gcc shell;
+  inherit cc shell;
   libc = if nativeLibc then null else libc;
   binutils = if nativeTools then null else binutils;
   # The wrapper scripts use 'cat', so we may need coreutils.
@@ -101,12 +101,12 @@ stdenv.mkDerivation {
       fi
       gccLDFlags+=" -L$gcc/lib"
 
-      ${optionalString gcc.langVhdl or false ''
+      ${optionalString cc.langVhdl or false ''
         gccLDFlags+=" -L${zlib}/lib"
       ''}
 
       # Find the gcc libraries path (may work only without multilib).
-      ${optionalString gcc.langAda or false ''
+      ${optionalString cc.langAda or false ''
         basePath=`echo $gcc/lib/*/*/*`
         gccCFlags+=" -B$basePath -I$basePath/adainclude"
         gnatCFlags="-aI$basePath/adainclude -aO$basePath/adalib"
@@ -173,28 +173,28 @@ stdenv.mkDerivation {
       fi
     ''
 
-    + optionalString gcc.langFortran or false ''
+    + optionalString cc.langFortran or false ''
       wrap gfortran ${./gcc-wrapper.sh} $gccPath/gfortran
       ln -sv gfortran $out/bin/g77
       ln -sv gfortran $out/bin/f77
     ''
 
-    + optionalString gcc.langJava or false ''
+    + optionalString cc.langJava or false ''
       wrap gcj ${./gcc-wrapper.sh} $gccPath/gcj
     ''
 
-    + optionalString gcc.langGo or false ''
+    + optionalString cc.langGo or false ''
       wrap gccgo ${./gcc-wrapper.sh} $gccPath/gccgo
     ''
 
-    + optionalString gcc.langAda or false ''
+    + optionalString cc.langAda or false ''
       wrap gnatgcc ${./gcc-wrapper.sh} $gccPath/gnatgcc
       wrap gnatmake ${./gnat-wrapper.sh} $gccPath/gnatmake
       wrap gnatbind ${./gnat-wrapper.sh} $gccPath/gnatbind
       wrap gnatlink ${./gnatlink-wrapper.sh} $gccPath/gnatlink
     ''
 
-    + optionalString gcc.langVhdl or false ''
+    + optionalString cc.langVhdl or false ''
       ln -s $gccPath/ghdl $out/bin/ghdl
     ''
 
@@ -248,9 +248,4 @@ stdenv.mkDerivation {
         stdenv.lib.attrByPath ["meta" "description"] "System C compiler" gcc_
         + " (wrapper script)";
     };
-
-  passthru = {
-    progname = "gcc";
-    prognamexx = "g++";
-  };
 }

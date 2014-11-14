@@ -1,9 +1,9 @@
-{ lib, stdenv, fetchurl, cmake, libcxxabi, fixDarwinDylibNames }:
+{ lib, stdenv, fetchurl, cmake, libcxxabi, fixDarwinDylibNames, python }:
 
 let
   version = "3.5.0";
 
-stdenv.mkDerivation rec {
+in stdenv.mkDerivation rec {
   name = "libc++-${version}";
 
   src = fetchurl {

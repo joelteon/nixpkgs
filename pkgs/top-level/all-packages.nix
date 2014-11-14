@@ -1961,11 +1961,7 @@ let
 
   openssh_with_kerberos = pkgs.appendToName "with-kerberos" (openssh.override { withKerberos = true; });
 
-  opensp = callPackage ../tools/text/sgml/opensp {
-    stdenv = if stdenv.isDarwin
-      then allStdenvs.stdenvDarwinNaked
-      else stdenv;
-  };
+  opensp = callPackage ../tools/text/sgml/opensp { };
 
   spCompat = callPackage ../tools/text/sgml/opensp/compat.nix { };
 
@@ -2902,11 +2898,11 @@ let
 
   ccl = builderDefsPackage ../development/compilers/ccl {};
 
-  clang = wrapClang llvmPackages.clang;
+  clang = wrapCC llvmPackages.clang;
 
-  clang_35 = wrapClang llvmPackages_35.clang;
-  clang_34 = wrapClang llvmPackages_34.clang;
-  clang_33 = wrapClang (clangUnwrapped llvm_33 ../development/compilers/llvm/3.3/clang.nix);
+  clang_35 = wrapCC llvmPackages_35.clang;
+  clang_34 = wrapCC llvmPackages_34.clang;
+  clang_33 = wrapCC (clangUnwrapped llvm_33 ../development/compilers/llvm/3.3/clang.nix);
 
   clangAnalyzer = callPackage ../development/tools/analysis/clang-analyzer {
     clang = clang_34;
@@ -3843,16 +3839,17 @@ let
 
   win32hello = callPackage ../development/compilers/visual-c++/test { };
 
-  wrapGCCWith = gccWrapper: glibc: baseGCC: gccWrapper {
+  wrapCCWith = ccWrapper: glibc: baseCC: ccWrapper {
     nativeTools = stdenv.cc.nativeTools or false;
     nativeLibc = stdenv.cc.nativeLibc or false;
     nativePrefix = stdenv.cc.nativePrefix or "";
-    cc = baseGCC;
+    cc = baseCC;
     libc = glibc;
-    inherit stdenv binutils coreutils zlib libcxx;
+    extraPackages = stdenv.lib.optional stdenv.isDarwin libcxx;
+    inherit stdenv binutils coreutils zlib;
   };
 
-  wrapGCC = wrapGCCWith (makeOverridable (import ../build-support/gcc-wrapper)) glibc;
+  wrapCC = wrapCCWith (makeOverridable (import ../build-support/cc-wrapper)) glibc;
 
   wrapGCCCross =
     {gcc, libc, binutils, cross, shell ? "", name ? "gcc-cross-wrapper"}:

@@ -70,15 +70,14 @@ rec {
         export NIX_ENFORCE_PURITY=
       '';
 
-      cc = import ../../build-support/clang-wrapper {
+      cc = import ../../build-support/cc-wrapper {
         nativeTools  = true;
         nativePrefix = "${buildTools.tools}/Library/Developer/CommandLineTools/usr";
         nativeLibc   = true;
         stdenv       = stage0.stdenv;
-        libcxx       = "/usr";
-        libcxxabi    = "/usr";
+        extraPackages = ["/usr"];
         shell        = "/bin/bash";
-        clang        = {
+        cc        = {
           name    = "clang-9.9.9";
           gcc     = "/usr";
           outPath = "${buildTools.tools}/Library/Developer/CommandLineTools/usr";
@@ -120,13 +119,13 @@ rec {
       export NIX_ENFORCE_PURITY=1
     '';
 
-    cc = import ../../build-support/clang-wrapper {
+    cc = import ../../build-support/cc-wrapper {
       inherit stdenv;
       nativeTools  = false;
       nativeLibc   = true;
-      inherit (pkgs) libcxx;
+      extraPackages = [pkgs.libcxx];
       binutils  = pkgs.darwin.cctools_native;
-      clang     = pkgs.llvmPackages.clang;
+      cc        = pkgs.llvmPackages.clang;
       coreutils = pkgs.coreutils;
       shell     = "${pkgs.bash}/bin/bash";
     };

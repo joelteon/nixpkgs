@@ -1,4 +1,4 @@
-{ stdenv, cmake, coreutils, fetchsvn, libcxx, libunwind, llvm }:
+{ stdenv, cmake, coreutils, fetchsvn, libcxx, libunwind, llvm, lib }:
 let
   rev = "217324";
 in stdenv.mkDerivation {

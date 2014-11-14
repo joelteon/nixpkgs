@@ -48,7 +48,7 @@ let
       ../../build-support/setup-hooks/patch-shebangs.sh
       ../../build-support/setup-hooks/move-sbin.sh
       ../../build-support/setup-hooks/move-lib64.sh
-      gcc
+      cc
     ];
 
   # Add a utility function to produce derivations that use this

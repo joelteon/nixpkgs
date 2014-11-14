@@ -1,4 +1,4 @@
-export NIX_GCC=@out@
+export NIX_CC=@out@
 
 addCVars () {
     if [ -d $1/include ]; then
@@ -34,5 +34,5 @@ if [ -n "@coreutils@" ]; then
     addToSearchPath PATH @coreutils@/bin
 fi
 
-export CC=gcc
-export CXX=g++
+export CC=@out@/bin/cc
+export CXX=@out@/bin/c++
