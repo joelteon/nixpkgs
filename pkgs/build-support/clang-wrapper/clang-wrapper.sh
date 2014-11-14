@@ -79,18 +79,18 @@ if test "$NIX_ENFORCE_PURITY" = "1" -a -n "$NIX_STORE"; then
     NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE --sysroot=/var/empty"
 fi
 
-if test -n "@libcxx@"; then
+if test -n "@libcxx@" && test "@libcxx@" != "/usr"; then
     NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE -isystem@libcxx@/include/c++/v1"
+    NIX_CFLAGS_LINK="$NIX_CFLAGS_LINK -L@libcxx@/lib -L@libcxxabi@/lib"
+
     if [[ "@clangProg@" = *++ ]]; then
         NIX_CFLAGS_COMPILE="$NIX_CFLAGS_COMPILE -stdlib=libc++"
-        if test -z "$NIX_SKIP_CXX"; then
-            NIX_CFLAGS_LINK="$NIX_CFLAGS_LINK -L@libcxx@/lib -stdlib=libc++"
-        fi
         if test -z "$NIX_SKIP_CXXABI" && echo "$@" | grep -qvw -- -nostdlib; then
-            NIX_CFLAGS_LINK="$NIX_CFLAGS_LINK -L@libcxxabi@/lib -lc++abi"
+            NIX_CFLAGS_LINK="$NIX_CFLAGS_LINK -lc++abi"
         fi
     fi
 fi
+
 
 # Add the flags for the C compiler proper.
 extraAfter=($NIX_CFLAGS_COMPILE)

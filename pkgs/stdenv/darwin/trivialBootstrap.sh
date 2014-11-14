@@ -10,6 +10,7 @@ PATH=$out/bin/
 cd $out/bin
 
 ln -s $mkdir
+ln -s /bin/ed
 ln -s /bin/sh
 ln -s /bin/cp
 ln -s /bin/mv

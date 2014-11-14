@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, flex, yacc }:
+{ stdenv, fetchurl, yacc, flex }:
 
 stdenv.mkDerivation rec {
   version = "86";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "0xr0296jm1r3q7kbam98h85g23qlfi763z54ahj563n636kyk2wb";
   };
 
-  buildInputs = [ flex yacc ];
+  buildInputs = [ yacc flex ];
 
   buildPhase = ''
     cd migcom.tproj

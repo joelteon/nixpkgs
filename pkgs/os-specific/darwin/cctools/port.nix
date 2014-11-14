@@ -11,10 +11,10 @@ let
       # Should be fetchFromGitHub but it was whining so this will do for now
       owner  = "tpoechtrager";
       repo   = "cctools-port";
-      rev    = "7083dddbb0f106d791d313829ea7dc45db90e375";
+      rev    = "88fd4d1514b4e23cddb3409f74d09349d6ff2f3c";
     in fetchurl {
       url    = "https://github.com/${owner}/${repo}/archive/${rev}.tar.gz";
-      sha256 = "017gxlcwgi7xhayjzj9w3fac175p2rm4vjzf9cycq9683m9pmyzj";
+      sha256 = "0qka91xp7h16g3m20q3iraf5nnps8kq56qs5478j5zdx9ajjl5zq";
     };
 
     buildInputs = [
@@ -28,6 +28,15 @@ let
     configureFlags = [ "CXXFLAGS=-I${libcxx}/include/c++/v1" ];
 
     postPatch = ''
+      # FIXME: there are far more absolute path references that I don't want to fix right now
+      substituteInPlace cctools/configure.ac \
+        --replace "-isystem /usr/local/include -isystem /usr/pkg/include" "" \
+        --replace "-L/usr/local/lib" "" \
+        --replace "AC_CONFIG_FILES([otool/Makefile])" ""
+
+      substituteInPlace cctools/Makefile.am \
+        --replace 'SUBDIRS=libstuff ar as misc otool ld64 $(LD_CLASSIC)' 'SUBDIRS=libstuff ar as misc ld64 $(LD_CLASSIC)'
+
       patchShebangs tools
       sed -i -e 's/which/type -P/' tools/*.sh
       sed -i -e 's|clang++|& -I${libcxx}/include/c++/v1|' cctools/autogen.sh
@@ -49,6 +58,12 @@ let
       sh autogen.sh
     '';
 
+    preInstall = ''
+      pushd include
+      make DSTROOT=$out/include RC_OS=common install
+      popd
+    '';
+
     meta = {
       homepage = "http://www.opensource.apple.com/source/cctools/";
       description = "Mac OS X Compiler Tools (cross-platform port)";
@@ -56,10 +71,7 @@ let
     };
   };
 in {
-  # Hacks that for the darwin stdenv (sad that we need write workarounds for what started as a darwin package)
   native = stdenv.mkDerivation (baseParams // {
-    patches = baseParams.patches ++ [ ./darwin.patch ];
-
     postInstall = ''
       cd $out/bin
       for tool in dwarfdump dsymutil; do

@@ -4323,7 +4323,7 @@ let
   });
 
   binutilsCross =
-    if crossSystem != null && crossSystem.libc == "libSystem" then darwin.cctools
+    if crossSystem != null && crossSystem.libc == "libSystem" then darwin.cctools_cross
     else lowPrio (forceNativeDrv (import ../development/tools/misc/binutils {
       inherit stdenv fetchurl zlib bison;
       noSysDirs = true;
@@ -7851,14 +7851,13 @@ let
   darwin = let
     cmdline = callPackage ../os-specific/darwin/command-line-tools {};
   in rec {
-
-    cctools = forceNativeDrv (callPackage ../os-specific/darwin/cctools/port.nix {
+    cctools_cross = forceNativeDrv (callPackage ../os-specific/darwin/cctools/port.nix {
       cross = assert crossSystem != null; crossSystem;
       inherit maloader;
       xctoolchain = xcode.toolchain;
-    });
+    }).cross;
 
-    cctools_native = (callPackage ../os-specific/darwin/cctools/port.nix {}).native;
+    cctools = (callPackage ../os-specific/darwin/cctools/port.nix {}).native;
 
     maloader = callPackage ../os-specific/darwin/maloader {
       inherit opencflite;
@@ -7868,18 +7867,45 @@ let
 
     xcode = callPackage ../os-specific/darwin/xcode {};
 
-    libc = callPackage ../os-specific/darwin/libc {};
 
     osx_sdk = callPackage ../os-specific/darwin/osx-sdk {};
     osx_private_sdk = callPackage ../os-specific/darwin/osx-private-sdk { inherit osx_sdk; };
 
     ps = callPackage ../os-specific/darwin/adv_cmds/ps.nix {};
-    bootstrap_cmds   = callPackage ../os-specific/darwin/bootstrap-cmds {};
 
     security_tool = callPackage ../os-specific/darwin/security-tool { inherit osx_private_sdk; };
 
     cmdline_sdk   = cmdline.sdk;
     cmdline_tools = cmdline.tools;
+
+    csu              = callPackage ../os-specific/darwin/csu {};
+    dyld             = callPackage ../os-specific/darwin/dyld {};
+    libc_825_40_1    = callPackage ../os-specific/darwin/libc/825_40_1.nix {};
+    libc             = callPackage ../os-specific/darwin/libc { libc_old = libc_825_40_1; };
+    libm             = callPackage ../os-specific/darwin/libm {};
+    xnu              = callPackage ../os-specific/darwin/xnu { inherit bootstrap_cmds; };
+    coreos_makefiles = callPackage ../os-specific/darwin/coreos-makefiles {};
+    bootstrap_cmds   = callPackage ../os-specific/darwin/bootstrap-cmds {};
+    libinfo          = callPackage ../os-specific/darwin/libinfo {};
+    corefoundation   = callPackage ../os-specific/darwin/corefoundation { inherit dyld libdispatch launchd libclosure; };
+    architecture     = callPackage ../os-specific/darwin/architecture {};
+    libunwind        = callPackage ../os-specific/darwin/libunwind { inherit dyld; };
+    carbon-headers   = callPackage ../os-specific/darwin/carbon-headers {};
+    CommonCrypto     = callPackage ../os-specific/darwin/CommonCrypto {};
+    copyfile         = callPackage ../os-specific/darwin/copyfile {};
+    removefile       = callPackage ../os-specific/darwin/removefile {};
+
+    libSystem        = callPackage ../os-specific/darwin/libSystem {
+      inherit bootstrap_cmds xnu libc libm libdispatch cctools libinfo dyld csu architecture;
+      inherit libclosure carbon-headers CommonCrypto copyfile removefile;
+    };
+
+    # We only have headers for these for now
+    libdispatch      = callPackage ../os-specific/darwin/libdispatch {};
+    libclosure       = callPackage ../os-specific/darwin/libclosure {};
+    launchd          = callPackage ../os-specific/darwin/launchd {};
+
+    dtrace           = callPackage ../os-specific/darwin/dtrace { inherit cctools; };
   };
 
   devicemapper = lvm2;
