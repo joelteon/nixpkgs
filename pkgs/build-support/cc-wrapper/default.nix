@@ -52,6 +52,8 @@ stdenv.mkDerivation {
         substituteAll "$wrapper" "$out/bin/$dst"
         chmod +x "$out/bin/$dst"
       }
+
+      echo ${toString extraPackages} > $out/nix-support/propagated-native-build-inputs
     ''
 
     + optionalString (!nativeLibc) ''
@@ -123,8 +125,6 @@ stdenv.mkDerivation {
       # you get tools like gcov, the manpages, etc. as well (including
       # for binutils and Glibc).
       echo $gcc $binutils $libc > $out/nix-support/propagated-user-env-packages
-
-      echo ${toString extraPackages} > $out/nix-support/propagated-native-build-inputs
     ''
 
     + optionalString (stdenv.isSunOS && nativePrefix != "") ''

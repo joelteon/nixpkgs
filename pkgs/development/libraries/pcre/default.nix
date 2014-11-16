@@ -12,6 +12,8 @@ stdenv.mkDerivation rec {
     sha256 = "1fs5p1z67m9f4xnyil3s4lhgyld78f7m4d1yawpyhh0cvrbk90zg";
   };
 
+  NIX_CFLAGS_COMPILE = "-v";
+
   configureFlags = ''
     --enable-jit
     ${if unicodeSupport then "--enable-unicode-properties" else ""}

@@ -26,7 +26,7 @@ stdenv.mkDerivation {
   sharedLibrary =
     !stdenv.isDarwin && !(stdenv ? isDietLibC) && !(stdenv ? isStatic) && stdenv.system != "i686-cygwin" && !linkStatic;
 
-  patchPhase = stdenv.lib.optionalString stdenv.isDarwin "substituteInPlace Makefile --replace 'CC=gcc' 'CC=clang'";
+  patchPhase = stdenv.lib.optionalString stdenv.isDarwin ''substituteInPlace Makefile --replace 'CC=gcc' "CC=$CC"'';
 
   preConfigure = "substituteInPlace Makefile --replace '$(PREFIX)/man' '$(PREFIX)/share/man'";
 
