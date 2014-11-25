@@ -2,7 +2,7 @@
 
 # be sure not to rebuild clang on darwin; some packages request it specifically
 # we need to fix those
-assert stdenv.isDarwin -> stdenv.gcc.nativeTools;
+assert stdenv.isDarwin -> stdenv.cc.nativeTools;
 
 stdenv.mkDerivation {
   name = "clang-${version}";
