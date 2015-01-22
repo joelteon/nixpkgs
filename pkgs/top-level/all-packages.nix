@@ -1303,9 +1303,7 @@ let
 
   gifsicle = callPackage ../tools/graphics/gifsicle { };
 
-  gitlab = callPackage ../applications/version-management/gitlab {
-    libiconv = libiconvOrLibc;
-  };
+  gitlab = callPackage ../applications/version-management/gitlab { };
 
   gitlab-shell = callPackage ../applications/version-management/gitlab-shell { };
 
@@ -3059,11 +3057,11 @@ let
 
   ccl = callPackage ../development/compilers/ccl { };
 
-  clang = wrapGCC llvmPackages.clang;
+  clang = wrapClang llvmPackages.clang;
 
-  clang_35 = wrapGCC llvmPackages_35.clang;
-  clang_34 = wrapGCC llvmPackages_34.clang;
-  clang_33 = wrapGCC (clangUnwrapped llvm_33 ../development/compilers/llvm/3.3/clang.nix);
+  clang_35 = wrapClang llvmPackages_35.clang;
+  clang_34 = wrapClang llvmPackages_34.clang;
+  clang_33 = wrapClang (clangUnwrapped llvm_33 ../development/compilers/llvm/3.3/clang.nix);
 
   clangAnalyzer = callPackage ../development/tools/analysis/clang-analyzer {
     clang = clang_34;
@@ -3076,13 +3074,13 @@ let
 
   clangSelf = clangWrapSelf llvmPackagesSelf.clang;
 
-  clangWrapSelf = build: (import ../build-support/gcc-wrapper) {
-    gcc = build;
+  clangWrapSelf = build: (import ../build-support/clang-wrapper) {
+    clang = build;
     stdenv = clangStdenv;
     libc = glibc;
     binutils = binutils;
-    inherit coreutils zlib;
-    extraPackages = [ libcxx ];
+    shell = bash;
+    inherit libcxx coreutils zlib;
     nativeTools = false;
     nativeLibc = false;
   };
@@ -4042,6 +4040,19 @@ let
 
   win32hello = callPackage ../development/compilers/visual-c++/test { };
 
+  wrapClangWith = clangWrapper: libc: baseClang: clangWrapper {
+    nativeTools = stdenv.cc.nativeTools or false;
+    nativeLibc = stdenv.cc.nativeLibc or false;
+    nativePrefix = stdenv.cc.nativePrefix or "";
+    clang = baseClang;
+    libc = libc;
+    libcxx = libcxx;
+    libcxxabi = libcxxabi;
+    inherit stdenv binutils coreutils zlib;
+  };
+
+  wrapClang = wrapClangWith (makeOverridable (import ../build-support/clang-wrapper)) glibc;
+
   wrapGCCWith = gccWrapper: glibc: baseGCC: gccWrapper {
     nativeTools = stdenv.cc.nativeTools or false;
     nativeLibc = stdenv.cc.nativeLibc or false;
@@ -4246,6 +4257,7 @@ let
   };
   python27 = callPackage ../development/interpreters/python/2.7 {
     self = python27;
+    inherit (darwin) configd corefoundation;
   };
   python32 = callPackage ../development/interpreters/python/3.2 {
     self = python32;
@@ -4302,7 +4314,7 @@ let
   };
 
   ruby_1_8_7 = callPackage ../development/interpreters/ruby/ruby-1.8.7.nix { };
-  ruby_1_9_3 = callPackage ../development/interpreters/ruby/ruby-1.9.3.nix { };
+  ruby_1_9_3 = callPackage ../development/interpreters/ruby/ruby-1.9.3.nix { libobjc = darwin.libobjc; };
   ruby_2_0_0 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.0.0.nix { });
   ruby_2_1_0 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.0.nix { });
   ruby_2_1_1 = lowPrio (callPackage ../development/interpreters/ruby/ruby-2.1.1.nix { });
@@ -4483,7 +4495,7 @@ let
   bam = callPackage ../development/tools/build-managers/bam {};
 
   binutils = if stdenv.isDarwin
-    then import ../build-support/native-darwin-cctools-wrapper {inherit stdenv;}
+    then darwin.cctools
     else callPackage ../development/tools/misc/binutils {
       inherit noSysDirs;
     };
@@ -4494,7 +4506,7 @@ let
   });
 
   binutilsCross =
-    if crossSystem != null && crossSystem.libc == "libSystem" then darwin.cctools
+    if crossSystem != null && crossSystem.libc == "libSystem" then darwin.cctools_cross
     else lowPrio (forceNativeDrv (import ../development/tools/misc/binutils {
       inherit stdenv fetchurl zlib bison;
       noSysDirs = true;
@@ -4569,8 +4581,7 @@ let
   ctodo = callPackage ../applications/misc/ctodo { };
 
   cmake = callPackage ../development/tools/build-managers/cmake {
-    wantPS = stdenv.isDarwin;
-    ps     = if stdenv.isDarwin then darwin.ps else null;
+    inherit (darwin) ps; # This only gets forced if isDarwin
   };
 
   cmake-3_0 = callPackage ../development/tools/build-managers/cmake/3.0.nix { };
@@ -6093,19 +6104,10 @@ let
 
   libgsf = callPackage ../development/libraries/libgsf { };
 
-  libiconv = callPackage ../development/libraries/libiconv { };
-
-  libiconvOrEmpty = if libiconvOrNull == null then [] else [libiconv];
-
-  libiconvOrNull =
-    if stdenv.cc.libc or null != null || stdenv.isGlibc
-    then null
-    else libiconv;
-
-  # The logic behind this attribute is broken: libiconvOrNull==null does
-  # NOT imply libiconv=glibc! On Darwin, for example, we have a native
-  # libiconv library which is not glibc.
-  libiconvOrLibc = if libiconvOrNull == null then stdenv.cc.libc else libiconv;
+  libiconv =
+    if stdenv.isGlibc
+    then stdenv.cc.libc
+    else callPackage ../development/libraries/libiconv { };
 
   # On non-GNU systems we need GNU Gettext for libintl.
   libintlOrEmpty = stdenv.lib.optional (!stdenv.isLinux) gettext;
@@ -6362,9 +6364,12 @@ let
 
   liburcu = callPackage ../development/libraries/liburcu { };
 
-  libusb = callPackage ../development/libraries/libusb {};
+  libusb = callPackage ../development/libraries/libusb { };
 
-  libusb1 = callPackage ../development/libraries/libusb1 { };
+  libusb1 = callPackage ../development/libraries/libusb1 {
+    libobjc = darwin.libobjc;
+    iokit   = darwin.iokit;
+  };
 
   libunwind = if stdenv.isDarwin
     then callPackage ../development/libraries/libunwind/native.nix {}
@@ -8189,14 +8194,13 @@ let
   darwin = let
     cmdline = callPackage ../os-specific/darwin/command-line-tools {};
   in rec {
-
-    cctools = forceNativeDrv (callPackage ../os-specific/darwin/cctools/port.nix {
+    cctools_cross = forceNativeDrv (callPackage ../os-specific/darwin/cctools/port.nix {
       cross = assert crossSystem != null; crossSystem;
       inherit maloader;
       xctoolchain = xcode.toolchain;
-    });
+    }).cross;
 
-    cctools_native = (callPackage ../os-specific/darwin/cctools/port.nix {}).native;
+    cctools = (callPackage ../os-specific/darwin/cctools/port.nix { inherit libobjc; }).native;
 
     maloader = callPackage ../os-specific/darwin/maloader {
       inherit opencflite;
@@ -8206,18 +8210,62 @@ let
 
     xcode = callPackage ../os-specific/darwin/xcode {};
 
-    libc = callPackage ../os-specific/darwin/libc {};
 
     osx_sdk = callPackage ../os-specific/darwin/osx-sdk {};
     osx_private_sdk = callPackage ../os-specific/darwin/osx-private-sdk { inherit osx_sdk; };
 
     ps = callPackage ../os-specific/darwin/adv_cmds/ps.nix {};
-    bootstrap_cmds   = callPackage ../os-specific/darwin/bootstrap-cmds {};
 
     security_tool = callPackage ../os-specific/darwin/security-tool { inherit osx_private_sdk; };
 
     cmdline_sdk   = cmdline.sdk;
     cmdline_tools = cmdline.tools;
+
+    csu              = callPackage ../os-specific/darwin/csu {};
+    dyld             = callPackage ../os-specific/darwin/dyld {};
+    libc_825_40_1    = callPackage ../os-specific/darwin/libc/825_40_1.nix {};
+    libc             = callPackage ../os-specific/darwin/libc { libc_old = libc_825_40_1; };
+    libm             = callPackage ../os-specific/darwin/libm {};
+    xnu              = callPackage ../os-specific/darwin/xnu { inherit bootstrap_cmds; };
+    coreos_makefiles = callPackage ../os-specific/darwin/coreos-makefiles {};
+    bootstrap_cmds   = callPackage ../os-specific/darwin/bootstrap-cmds {};
+    libinfo          = callPackage ../os-specific/darwin/libinfo {};
+    corefoundation   = callPackage ../os-specific/darwin/corefoundation { inherit dyld libdispatch launchd libclosure; };
+    architecture     = callPackage ../os-specific/darwin/architecture {};
+    libunwind        = callPackage ../os-specific/darwin/libunwind { inherit dyld; };
+    carbon-headers   = callPackage ../os-specific/darwin/carbon-headers {};
+    commonCrypto     = callPackage ../os-specific/darwin/CommonCrypto {};
+    copyfile         = callPackage ../os-specific/darwin/copyfile {};
+    removefile       = callPackage ../os-specific/darwin/removefile {};
+    configd          = callPackage ../os-specific/darwin/configd { inherit launchd bootstrap_cmds xnu ppp iokit eap8021x security; };
+    libnotify        = callPackage ../os-specific/darwin/libnotify {};
+    libobjc          = callPackage ../os-specific/darwin/libobjc {};
+
+    # Has global state that conflicts with the system libobjc that we get through libSystem, so we can't use it yet...
+    libobjcPure      = callPackage ../os-specific/darwin/libobjc/pure.nix { inherit libauto launchd libunwind; libc_old = libc_825_40_1; };
+    mDNSResponder    = callPackage ../os-specific/darwin/mDNSResponder {};
+    libresolv        = callPackage ../os-specific/darwin/libresolv { inherit libinfo configd libnotify mDNSResponder; };
+    libauto          = callPackage ../os-specific/darwin/libauto {};
+    iokit            = callPackage ../os-specific/darwin/iokit { inherit xnu; };
+    security         = callPackage ../os-specific/darwin/Security {};
+    ppp              = callPackage ../os-specific/darwin/ppp {};
+    eap8021x         = callPackage ../os-specific/darwin/eap8021x {};
+
+    libSystem        = callPackage ../os-specific/darwin/libSystem {
+      inherit bootstrap_cmds xnu libc libm libdispatch cctools libinfo dyld csu architecture;
+      inherit libclosure carbon-headers commonCrypto copyfile removefile libresolv libnotify;
+      inherit libpthread mDNSResponder;
+    };
+
+    # We only have headers for these for now
+    libdispatch      = callPackage ../os-specific/darwin/libdispatch {};
+    libclosure       = callPackage ../os-specific/darwin/libclosure {};
+    libpthread       = callPackage ../os-specific/darwin/libpthread {
+      inherit libdispatch xnu;
+    };
+    launchd          = callPackage ../os-specific/darwin/launchd {};
+
+    dtrace           = callPackage ../os-specific/darwin/dtrace { inherit cctools; };
   };
 
   devicemapper = lvm2;
@@ -11341,7 +11389,7 @@ let
     graphicsSupport = false;
   };
 
-  weechat = callPackage ../applications/networking/irc/weechat { };
+  weechat = callPackage ../applications/networking/irc/weechat { inherit (darwin) libobjc; };
 
   westonLite = callPackage ../applications/window-managers/weston {
     pango = null;

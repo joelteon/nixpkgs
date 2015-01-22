@@ -1,10 +1,8 @@
 { stdenv, fetchurl, fetchpatch, replace, curl, expat, zlib, bzip2, libarchive
-, useNcurses ? false, ncurses, useQt4 ? false, qt4, wantPS ? false, ps ? null
+, useNcurses ? false, ncurses, useQt4 ? false, qt4, ps
 }:
 
 with stdenv.lib;
-
-assert wantPS -> (ps != null);
 
 let
   os = stdenv.lib.optionalString;
@@ -41,14 +39,19 @@ stdenv.mkDerivation rec {
       sha256 = "16acmdr27adma7gs9rs0dxdiqppm15vl3vv3agy7y8s94wyh4ybv";
     });
 
+  postPatch = ''
+    substituteInPlace Modules/Platform/Darwin.cmake \
+      --replace 'list(REMOVE_DUPLICATES _apps_paths)' ''$'if (_apps_paths)\nlist(REMOVE_DUPLICATES _apps_paths)\nendif()'
+  '';
+
   buildInputs = [ curl expat zlib bzip2 libarchive ]
     ++ optional useNcurses ncurses
     ++ optional useQt4 qt4;
 
-  propagatedBuildInputs = optional wantPS ps;
+  propagatedBuildInputs = optional stdenv.isDarwin ps;
 
   CMAKE_PREFIX_PATH = stdenv.lib.concatStringsSep ":" buildInputs;
-  
+
   configureFlags =
     "--docdir=/share/doc/${name} --mandir=/share/man --system-libs"
     + stdenv.lib.optionalString useQt4 " --qt-gui";

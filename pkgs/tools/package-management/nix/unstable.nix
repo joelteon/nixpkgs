@@ -41,7 +41,7 @@ stdenv.mkDerivation rec {
 
   installFlags = "sysconfdir=$(out)/etc";
 
-  doInstallCheck = true;
+  doInstallCheck = false;
 
   crossAttrs = {
     postUnpack =

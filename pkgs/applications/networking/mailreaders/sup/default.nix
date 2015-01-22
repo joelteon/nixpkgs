@@ -1,5 +1,5 @@
 { stdenv, fetchurl, ruby, rake, rubygems, makeWrapper, ncursesw_sup
-, xapian_ruby, gpgme, libiconvOrEmpty, mime_types, chronic, trollop, lockfile
+, xapian_ruby, gpgme, libiconv, mime_types, chronic, trollop, lockfile
 , gettext, iconv, locale, text, highline, rmail_sup, unicode, gnupg, which
 , bundler, git }:
 
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
 
   buildInputs =
     [ rake ruby rubygems makeWrapper gpgme ncursesw_sup xapian_ruby
-      libiconvOrEmpty git ];
+      libiconv git ];
 
   phases = [ "unpackPhase" "buildPhase" "installPhase" ];
 

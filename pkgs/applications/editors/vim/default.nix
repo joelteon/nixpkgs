@@ -19,6 +19,10 @@ stdenv.mkDerivation rec {
   configureFlags = [
     "--enable-multibyte"
     "--enable-nls"
+  ] ++ stdenv.lib.optionals stdenv.isDarwin [
+    # These disable darwin-specific GUI code that doesn't work yet in our stdenv
+    "--disable-darwin"
+    "--enable-gui=no"
   ];
 
   postInstall = "ln -s $out/bin/vim $out/bin/vi";

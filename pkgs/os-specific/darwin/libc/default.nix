@@ -1,40 +1,38 @@
-{ stdenv, fetchurl, fetchgit, fetchzip, perl, python }:
+{ stdenv, fetchurl, ed, unifdef, libc_old }:
 
-let
-  osx_sdk = fetchgit {
-    url = "https://github.com/samdmarshall/OSXPrivateSDK";
-    rev = "refs/heads/master";
-    sha256 = "04m71xhjyac42h7alxjsqsipq07hm85wibvm3h65dqafcbqkl1i1";
-  };
-  dispatch = fetchzip {
-    url = "https://opensource.apple.com/tarballs/libdispatch/libdispatch-339.92.1.tar.gz";
-    sha256 = "0faxm4r7lamz57m9pr72jwm0qiwcrcy5dsiff0g9qyfi10pnj5i4";
-  };
-in
 stdenv.mkDerivation rec {
-  version = "825.40.1";
-  name = "libc-${version}";
+  version = "997.90.3";
+  name    = "Libc-${version}";
+
   src = fetchurl {
-    url = "https://opensource.apple.com/tarballs/Libc/Libc-${version}.tar.gz";
-    sha256 = "0xsx1im52gwlmcrv4lnhhhn9dyk5ci6g27k6yvibn9vj8fzjxwcf";
+    url    = "http://opensource.apple.com/tarballs/Libc/${name}.tar.gz";
+    sha256 = "1jz5bx9l4q484vn28c6n9b28psja3rpxiqbj6zwrwvlndzmq1yz5";
   };
 
-  buildInputs = [ perl ];
+  phases = [ "unpackPhase" "installPhase" ];
 
-  patches = [ ./fileport.patch ];
+  buildInputs = [ ed unifdef ];
 
-  configurePhase = ''
-    mkdir -p scratch
-    mkdir -p scratch/System/sys
-    ln -sv ${osx_sdk}/System/Library/Frameworks/System.framework/PrivateHeaders/sys/fsctl.h scratch/System/sys
-    mkdir tmpbin
-    ln -s /usr/bin/xcodebuild tmpbin
-    ln -s /usr/sbin/dtrace tmpbin
-    export PATH=$PATH:$(pwd -P)/tmpbin
-  '';
+  # TODO: asl.h actually comes from syslog project now
+  installPhase = ''
+    export SRCROOT=$PWD
+    export DSTROOT=$out
+    export PUBLIC_HEADERS_FOLDER_PATH=include
+    export PRIVATE_HEADERS_FOLDER_PATH=include
+    bash xcodescripts/headers.sh
 
-  buildPhase = ''
-    BASE=$(pwd -P)
-    xcodebuild HEADER_SEARCH_PATHS="$BASE/fbsdcompat $BASE/pthreads $BASE/include $BASE/locale $BASE/locale/FreeBSD ${osx_sdk}/usr/local/include ${osx_sdk}/usr/include $BASE/stdtime/FreeBSD $BASE/gen ${osx_sdk}/System/Library/Frameworks/System.framework/PrivateHeaders $BASE/scratch ${osx_sdk}/System/Library/Frameworks/System.framework/PrivateHeaders/uuid $BASE/gdtoa"
+    # Ugh Apple stopped releasing this stuff so we need an older one...
+    cp    ${libc_old}/include/spawn.h    $out/include
+    cp    ${libc_old}/include/setjmp.h   $out/include
+    cp    ${libc_old}/include/ucontext.h $out/include
+    cp    ${libc_old}/include/pthread*.h $out/include
+    cp    ${libc_old}/include/sched.h    $out/include
+    cp -R ${libc_old}/include/malloc     $out/include
+
+    mkdir -p $out/include/libkern
+    cp ${libc_old}/include/asl.h                    $out/include
+    cp ${libc_old}/include/libproc.h                $out/include
+    cp ${libc_old}/include/libkern/OSAtomic.h       $out/include/libkern
+    cp ${libc_old}/include/libkern/OSCacheControl.h $out/include/libkern
   '';
 }

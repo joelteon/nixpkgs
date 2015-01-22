@@ -10,21 +10,22 @@ in stdenv.mkDerivation {
     sha256 = "07nmvzw5rcxpaw03c18vkn2mxp0lhn6y4nn57d2vlxi36kcwfbb8";
   };
 
-  NIX_CFLAGS_LINK = "-L${libunwind}/lib";
-
-  NIX_SKIP_CXX    = "true";
-  NIX_SKIP_CXXABI = "true";
+  NIX_CFLAGS_LINK = if stdenv.isDarwin then "" else "-L${libunwind}/lib";
 
   buildInputs = [ coreutils cmake ];
 
   postUnpack = ''
     unpackFile ${libcxx.src}
     unpackFile ${llvm.src}
-    export NIX_CFLAGS_COMPILE+=" -I${libunwind}/include -I$PWD/include"
+    export NIX_CFLAGS_COMPILE+="  -I$PWD/include"
     export cmakeFlags="-DLLVM_PATH=$(${coreutils}/bin/readlink -f llvm-*) -DLIBCXXABI_LIBCXX_INCLUDES=$(${coreutils}/bin/readlink -f libcxx-*)/include"
   '' + stdenv.lib.optionalString stdenv.isDarwin ''
     export TRIPLE=x86_64-apple-darwin
+  '' + stdenv.lib.optionalString (!stdenv.isDarwin) ''
+    export NIX_CFLAGS_COMPILE+=" -I${libunwind}/include"
   '';
+
+  NIX_SKIP_CXXABI = "true";
 
   installPhase = if stdenv.isDarwin
     then ''

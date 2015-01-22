@@ -62,6 +62,7 @@ stdenv.mkDerivation {
       (if stdenv.cross.arch == "arm" then "ld-linux.so.3" else
        if stdenv.cross.arch == "mips" then "ld.so.1" else
        if stdenv.lib.hasSuffix "pc-gnu" stdenv.cross.config then "ld.so.1" else
+       if stdenv.isDarwin then "dyld" else
        abort "don't know the name of the dynamic linker for this platform");
   };
 
@@ -81,6 +82,7 @@ stdenv.mkDerivation {
        if stdenv.isArm then "ld-linux.so.3" else
        if stdenv.system == "powerpc-linux" then "ld.so.1" else
        if stdenv.system == "mips64el-linux" then "ld.so.1" else
+       if stdenv.isDarwin then "dyld" else
        abort "don't know the name of the dynamic linker for this platform")
     else "";
 

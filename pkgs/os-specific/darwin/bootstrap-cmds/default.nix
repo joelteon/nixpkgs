@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, flex, yacc }:
+{ stdenv, fetchurl, yacc, flex }:
 
 stdenv.mkDerivation rec {
   version = "86";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "0xr0296jm1r3q7kbam98h85g23qlfi763z54ahj563n636kyk2wb";
   };
 
-  buildInputs = [ flex yacc ];
+  buildInputs = [ yacc flex ];
 
   buildPhase = ''
     cd migcom.tproj
@@ -42,5 +42,11 @@ stdenv.mkDerivation rec {
     cp migcom   $out/libexec
     cp mig.1    $out/share/man/man1
     cp migcom.1 $out/share/man/man1
+
+    substituteInPlace $out/bin/mig \
+      --replace 'arch=`/usr/bin/arch`' 'arch=i386' \
+      --replace '/usr/bin/' "" \
+      --replace '/bin/rmdir' "rmdir" \
+      --replace 'C=''${MIGCC}' "C=cc"
   '';
 }

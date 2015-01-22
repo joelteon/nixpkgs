@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, pkgconfig, udev ? null }:
+{ stdenv, fetchurl, pkgconfig, udev ? null, libobjc ? null, iokit ? null }:
 
 stdenv.mkDerivation rec {
   name = "libusb-1.0.19";
@@ -8,8 +8,9 @@ stdenv.mkDerivation rec {
     sha256 = "0h38p9rxfpg9vkrbyb120i1diq57qcln82h5fr7hvy82c20jql3c";
   };
 
-  buildInputs = [ pkgconfig ];
-  propagatedBuildInputs = stdenv.lib.optional stdenv.isLinux udev;
+  buildInputs = [ pkgconfig ] ++ stdenv.lib.optional stdenv.isDarwin iokit;
+  propagatedBuildInputs = stdenv.lib.optional stdenv.isLinux udev ++
+                          stdenv.lib.optionals stdenv.isDarwin [libobjc iokit];
 
   NIX_LDFLAGS = stdenv.lib.optionalString stdenv.isLinux "-lgcc_s";
 

@@ -15,7 +15,7 @@ composableDerivation.composableDerivation {} ( fixed : let inherit (fixed.fixed)
 
   enableParallelBuilding = true;
 
-  buildInputs = ["flex" "bison" "pkgconfig"];
+  buildInputs = [flex bison pkgconfig libiconv];
 
   flags = {
 

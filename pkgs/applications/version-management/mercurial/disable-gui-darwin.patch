@@ -1,0 +1,32 @@
+diff -r b2358bc1407c mercurial/osutil.c
+--- a/mercurial/osutil.c	Tue Jan 13 15:08:55 2015 -0500
++++ b/mercurial/osutil.c	Wed Jan 14 01:08:21 2015 -0500
+@@ -579,16 +579,7 @@
+ 
+ #ifdef __APPLE__
+-#include <ApplicationServices/ApplicationServices.h>
+-
+ static PyObject *isgui(PyObject *self)
+ {
+-	CFDictionaryRef dict = CGSessionCopyCurrentDictionary();
+-
+-	if (dict != NULL) {
+-		CFRelease(dict);
+-		Py_RETURN_TRUE;
+-	} else {
+-		Py_RETURN_FALSE;
+-	}
++	Py_RETURN_FALSE;
+ }
+ #endif
+diff -r b2358bc1407c setup.py
+--- a/setup.py	Tue Jan 13 15:08:55 2015 -0500
++++ b/setup.py	Wed Jan 14 01:08:21 2015 -0500
+@@ -499,7 +499,4 @@
+ osutil_ldflags = []
+ 
+-if sys.platform == 'darwin':
+-    osutil_ldflags += ['-framework', 'ApplicationServices']
+-
+ # disable osutil.c under windows + python 2.4 (issue1364)
+ if sys.platform == 'win32' and sys.version_info < (2, 5, 0, 'final'):

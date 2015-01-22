@@ -43,12 +43,10 @@ stdenv.mkDerivation rec {
   configureFlags = [
       ( if sslSupport then "--with-ssl=${openssl}" else "--without-ssl" )
       ( if scpSupport then "--with-libssh2=${libssh2}" else "--without-libssh2" )
+      "CC=cc"
     ]
     ++ stdenv.lib.optional c-aresSupport "--enable-ares=${c-ares}"
     ++ stdenv.lib.optional gssSupport "--with-gssapi=${gss}";
-
-  CXX = "g++";
-  CXXCPP = "g++ -E";
 
   crossAttrs = {
     # We should refer to the cross built openssl

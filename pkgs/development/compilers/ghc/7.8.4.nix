@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, ghc, perl, gmp, ncurses }:
+{ stdenv, fetchurl, ghc, perl, gmp, ncurses, libiconv }:
 
 stdenv.mkDerivation rec {
   version = "7.8.4";
@@ -9,7 +9,7 @@ stdenv.mkDerivation rec {
     sha256 = "1i4254akbb4ym437rf469gc0m40bxm31blp6s1z1g15jmnacs6f3";
   };
 
-  buildInputs = [ ghc perl gmp ncurses ];
+  buildInputs = [ ghc perl gmp ncurses libiconv ];
 
   enableParallelBuilding = true;
 

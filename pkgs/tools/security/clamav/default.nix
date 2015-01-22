@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, zlib, bzip2, libiconvOrNull, libxml2, openssl, ncurses, curl }:
+{ stdenv, fetchurl, zlib, bzip2, libiconv, libxml2, openssl, ncurses, curl }:
 stdenv.mkDerivation rec {
   name = "clamav-${version}";
   version = "0.98.5";
@@ -8,14 +8,13 @@ stdenv.mkDerivation rec {
     sha256 = "0kdaimnbbb0hymg7d15a3iwk17r8555nyzr3d1j96cwhzbakfbww";
   };
 
-  buildInputs = [ zlib bzip2 libxml2 openssl ncurses curl ]
-    ++ stdenv.lib.optional (libiconvOrNull != null) libiconvOrNull;
+  buildInputs = [ zlib bzip2 libxml2 openssl ncurses curl libiconv ];
 
   configureFlags = [
     "--with-zlib=${zlib}"
     "--with-libbz2-prefix=${bzip2}"
-  ] ++ (stdenv.lib.optional (libiconvOrNull != null)
-       "--with-iconv-dir=${libiconvOrNull}")
+  ] ++ (stdenv.lib.optional (!stdenv.stdenv.isGlibc)
+       "--with-iconv-dir=${libiconv}")
   ++ [
     "--with-xml=${libxml2}"
     "--with-openssl=${openssl}"

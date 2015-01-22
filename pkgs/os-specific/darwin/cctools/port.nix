@@ -1,5 +1,5 @@
 { stdenv, fetchurl, autoconf, automake, libtool
-, llvm, libcxx, clang, openssl, libuuid
+, llvm, libcxx, clang, openssl, libuuid, libobjc ? null
 }:
 
 let
@@ -11,26 +11,34 @@ let
       # Should be fetchFromGitHub but it was whining so this will do for now
       owner  = "tpoechtrager";
       repo   = "cctools-port";
-      rev    = "7083dddbb0f106d791d313829ea7dc45db90e375";
+      rev    = "88fd4d1514b4e23cddb3409f74d09349d6ff2f3c";
     in fetchurl {
-      url    = "https://github.com/${owner}/${repo}/archive/${rev}.tar.gz";
-      sha256 = "017gxlcwgi7xhayjzj9w3fac175p2rm4vjzf9cycq9683m9pmyzj";
+      url    = "http://github.com/${owner}/${repo}/archive/${rev}.tar.gz";
+      sha256 = "0qka91xp7h16g3m20q3iraf5nnps8kq56qs5478j5zdx9ajjl5zq";
     };
 
-    buildInputs = [
-      autoconf automake libtool llvm clang openssl libuuid
-    ];
+    buildInputs = [ autoconf automake libtool openssl libuuid ] ++
+      # Only need llvm and clang if the stdenv isn't already clang-based (TODO: just make a stdenv.cc.isClang)
+      stdenv.lib.optionals (!stdenv.isDarwin) [ llvm clang ] ++
+      stdenv.lib.optional stdenv.isDarwin libobjc;
 
     patches = [ ./ld-rpath-nonfinal.patch ./ld-ignore-rpath-link.patch ];
 
     enableParallelBuilding = true;
 
-    configureFlags = [ "CXXFLAGS=-I${libcxx}/include/c++/v1" ];
+    configureFlags = stdenv.lib.optionals (!stdenv.isDarwin) [ "CXXFLAGS=-I${libcxx}/include/c++/v1" ];
 
     postPatch = ''
+      # FIXME: there are far more absolute path references that I don't want to fix right now
+      substituteInPlace cctools/configure.ac \
+        --replace "-isystem /usr/local/include -isystem /usr/pkg/include" "" \
+        --replace "-L/usr/local/lib" "" \
+
+      substituteInPlace cctools/include/Makefile \
+        --replace "/bin/" ""
+
       patchShebangs tools
       sed -i -e 's/which/type -P/' tools/*.sh
-      sed -i -e 's|clang++|& -I${libcxx}/include/c++/v1|' cctools/autogen.sh
 
       # Workaround for https://www.sourceware.org/bugzilla/show_bug.cgi?id=11157
       cat > cctools/include/unistd.h <<EOF
@@ -42,11 +50,19 @@ let
       #  include_next "unistd.h"
       #endif
       EOF
+    '' + stdenv.lib.optionalString (!stdenv.isDarwin) ''
+      sed -i -e 's|clang++|& -I${libcxx}/include/c++/v1|' cctools/autogen.sh
     '';
 
     preConfigure = ''
       cd cctools
       sh autogen.sh
+    '';
+
+    preInstall = ''
+      pushd include
+      make DSTROOT=$out/include RC_OS=common install
+      popd
     '';
 
     meta = {
@@ -56,15 +72,13 @@ let
     };
   };
 in {
-  # Hacks that for the darwin stdenv (sad that we need write workarounds for what started as a darwin package)
   native = stdenv.mkDerivation (baseParams // {
-    patches = baseParams.patches ++ [ ./darwin.patch ];
-
+    # A hack for now...
     postInstall = ''
-      cd $out/bin
-      for tool in dwarfdump dsymutil; do
-        ln -s /usr/bin/$tool
-      done
+      cat >$out/bin/dsymutil << EOF
+      #!${stdenv.shell}
+      EOF
+      chmod +x $out/bin/dsymutil
     '';
   });
 

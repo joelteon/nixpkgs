@@ -6,6 +6,8 @@ let
   name = "mercurial-${version}";
 in
 
+assert stdenv.isDarwin -> !guiSupport; # When we have a working ApplicationServices.framework, we can revisit this
+
 stdenv.mkDerivation {
   inherit name;
 
@@ -13,6 +15,8 @@ stdenv.mkDerivation {
     url = "http://mercurial.selenic.com/release/${name}.tar.gz";
     sha256 = "1g7nfvapxj5k44dyp0p08v37s0zmrj2vl0rjgfd8297x0afidm08";
   };
+
+  patches = stdenv.lib.optionals stdenv.isDarwin [ ./disable-gui-darwin.patch ];
 
   inherit python; # pass it so that the same version can be used in hg2git
   pythonPackages = [ curses ];

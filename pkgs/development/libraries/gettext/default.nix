@@ -17,6 +17,10 @@ stdenv.mkDerivation (rec {
 
             # Share the cache among the various `configure' runs.
             "--config-cache"
+          ])
+     ++ (stdenv.lib.optionals stdenv.isDarwin
+          [ # yosemite thinks it has readlinkat but it doesn't
+            "ac_cv_func_readlinkat=no"
           ]);
 
   # On cross building, gettext supposes that the wchar.h from libc

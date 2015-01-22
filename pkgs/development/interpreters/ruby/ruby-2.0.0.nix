@@ -7,6 +7,7 @@
 , libyaml, yamlSupport ? true
 , libffi, fiddleSupport ? true
 , ruby_2_0_0, autoreconfHook, bison, useRailsExpress ? true
+, libiconv
 }:
 
 let
@@ -34,7 +35,8 @@ stdenv.mkDerivation rec {
   # Have `configure' avoid `/usr/bin/nroff' in non-chroot builds.
   NROFF = "${groff}/bin/nroff";
 
-  buildInputs = ops useRailsExpress [ autoreconfHook bison ]
+  buildInputs = [libiconv]
+    ++ (ops useRailsExpress [ autoreconfHook bison ] )
     ++ (op fiddleSupport libffi)
     ++ (ops cursesSupport [ ncurses readline ] )
     ++ (op docSupport groff )

@@ -13,14 +13,19 @@ stdenv.mkDerivation {
     md5 = "11aa15c8d3e28ee7815e0d5fcdf43fd4";
   };
 
+  patches = [ ./environment.patch ./getline.patch ./clang.patch ];
+
+  postPatch = ''
+    substituteInPlace ./configure \
+      --replace "*-darwin*" "willdefinitelynotmatch"
+  '';
+
   buildInputs = [ flex bison zlib libpng ncurses ed ];
 
   # fixes "error: conflicting types for 'calloc'", etc.
   preBuild = stdenv.lib.optionalString stdenv.isDarwin ''
     sed -i 57d texk/kpathsea/c-std.h
   '';
-
-  patches = [ ./environment.patch ./getline.patch ./clang.patch ];
 
   setupHook = ./setup-hook.sh;
 

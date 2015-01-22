@@ -6875,6 +6875,7 @@ let self = _self // overrides; _self = with self; {
       description = "Low-level HTTP connection (client)";
       license = with stdenv.lib.licenses; [ artistic1 gpl1Plus ];
     };
+    doCheck = false;
   };
 
   NetIP = buildPerlPackage {

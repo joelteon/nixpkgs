@@ -370,9 +370,10 @@ substitute() {
         content="${content//"$pattern"/$replacement}"
     done
 
-    printf "%s" "$content" > "$output".tmp
-    if [ -x "$output" ]; then chmod +x "$output".tmp; fi
-    mv -f "$output".tmp "$output"
+    local tempfile="$(mktemp -t "$(basename "$output")".XXXXXXXXXX)"
+    printf "%s" "$content" > "$tempfile"
+    if [ -x "$output" ]; then chmod +x "$tempfile"; fi
+    mv -f "$tempfile" "$output"
 }
 
 

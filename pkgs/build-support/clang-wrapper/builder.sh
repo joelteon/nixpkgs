@@ -6,12 +6,23 @@ mkdir -p $out/nix-support
 
 
 if test -z "$nativeLibc"; then
-    dynamicLinker="$libc/lib/$dynamicLinker"
-    echo $dynamicLinker > $out/nix-support/dynamic-linker
+    if [[ "$dynamicLinker" == *"dyld" ]]; then
+        # TODO: figure out a way to inject our dynamic linker here
+        :
+    else
+        dynamicLinker="$libc/lib/$dynamicLinker"
+        echo $dynamicLinker > $out/nix-support/dynamic-linker
 
-    if test -e $libc/lib/32/ld-linux.so.2; then
-        echo $libc/lib/32/ld-linux.so.2 > $out/nix-support/dynamic-linker-m32
+        if test -e $libc/lib/32/ld-linux.so.2; then
+            echo $libc/lib/32/ld-linux.so.2 > $out/nix-support/dynamic-linker-m32
+        fi
+
+        # The dynamic linker is passed in `ldflagsBefore' to allow
+        # explicit overrides of the dynamic linker by callers to clang/ld
+        # (the *last* value counts, so ours should come first).
+        echo "-dynamic-linker $dynamicLinker" > $out/nix-support/libc-ldflags-before
     fi
+
 
     # The "-B$libc/lib/" flag is a quick hack to force clang to link
     # against the crt1.o from our own glibc, rather than the one in
@@ -20,11 +31,6 @@ if test -z "$nativeLibc"; then
     echo "-B$libc/lib/ -idirafter $libc/include" > $out/nix-support/libc-cflags
 
     echo "-L$libc/lib" > $out/nix-support/libc-ldflags
-
-    # The dynamic linker is passed in `ldflagsBefore' to allow
-    # explicit overrides of the dynamic linker by callers to clang/ld
-    # (the *last* value counts, so ours should come first).
-    echo "-dynamic-linker $dynamicLinker" > $out/nix-support/libc-ldflags-before
 fi
 
 if test -n "$nativeTools"; then
@@ -36,10 +42,10 @@ if test -n "$nativeTools"; then
     ldPath="$nativePrefix/bin"
 else
     clangLDFlags=""
+
     if test -d "$gcc/lib"; then
       basePath="" #`echo $gcc/lib/*/*/*`
       # Need libgcc until the llvm compiler-rt library is complete
-      clangLDFlags="" # $clangLDFlags -L$basePath"
       if test -e "$gcc/lib64"; then
           clangLDFlags="$clangLDFlags -L$gcc/lib64"
       else
