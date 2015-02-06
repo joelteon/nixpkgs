@@ -20,7 +20,8 @@ stdenv.mkDerivation rec {
     ]
     ++ optional (precision != "double") "--enable-${precision}"
     # all x86_64 have sse2
-    ++ optional stdenv.isx86_64 "--enable-sse2";
+    ++ optional stdenv.isx86_64 "--enable-sse2"
+    ++ optional (stdenv.system == "x86_64-darwin") "--disable-openmp";
 
   enableParallelBuilding = true;
 
