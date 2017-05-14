@@ -871,6 +871,8 @@ with pkgs;
 
   dibbler = callPackage ../tools/networking/dibbler { };
 
+  diesel = callPackage ../development/tools/misc/diesel { };
+
   ding = callPackage ../applications/misc/ding {
     aspellDicts_de = aspellDicts.de;
     aspellDicts_en = aspellDicts.en;
