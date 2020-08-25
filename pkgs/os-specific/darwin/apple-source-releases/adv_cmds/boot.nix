@@ -59,7 +59,7 @@ in appleDerivation {
   buildPhase = ''
     runHook preBuild
 
-    bsdmake -C usr-share-locale.tproj
+    bsdmake -C usr-share-locale.tproj -j$NIX_BUILD_CORES
 
     clang ${recentAdvCmds}/ps/*.c -o ps
   '';

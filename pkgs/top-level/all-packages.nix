@@ -8584,8 +8584,8 @@ in
   lldb_9 = llvmPackages_9.lldb;
   lldb_10 = llvmPackages_10.lldb;
 
-  llvm = llvmPackages.llvm;
-  llvm-manpages = llvmPackages.llvm-manpages;
+  llvm = llvmPackages_10.llvm;
+  llvm-manpages = llvmPackages_10.llvm-manpages;
 
   llvm_10 = llvmPackages_10.llvm;
   llvm_9  = llvmPackages_9.llvm;
@@ -8594,7 +8594,7 @@ in
   llvm_6  = llvmPackages_6.llvm;
   llvm_5  = llvmPackages_5.llvm;
 
-  llvmPackages = recurseIntoAttrs llvmPackages_7;
+  llvmPackages = recurseIntoAttrs llvmPackages_10;
 
   llvmPackages_5 = callPackage ../development/compilers/llvm/5 ({
     inherit (stdenvAdapters) overrideCC;

@@ -6,11 +6,9 @@
 , macosVersionMin ? "10.12"
 # Allow passing in bootstrap files directly so we can test the stdenv bootstrap process when changing the bootstrap tools
 , bootstrapFiles ? let
-  fetch = { file, sha256, executable ? true }: import <nix/fetchurl.nix> {
-    url = "http://tarballs.nixos.org/stdenv-darwin/x86_64/d5bdfcbfe6346761a332918a267e82799ec954d2/${file}";
-    inherit (localSystem) system;
-    inherit sha256 executable;
-  }; in {
+  fetch = { file, sha256, executable ? true }:
+    /nix/store/r5g389d9rbfp4l1bx5i83xv2kr36zr5b-stdenv-bootstrap-tools/on-server + "/${file}";
+  in {
     sh      = fetch { file = "sh";    sha256 = "07wm33f1yzfpcd3rh42f8g096k4cvv7g65p968j28agzmm2s7s8m"; };
     bzip2   = fetch { file = "bzip2"; sha256 = "0y9ri2aprkrp2dkzm6229l0mw4rxr2jy7vvh3d8mxv2698v2kdbm"; };
     mkdir   = fetch { file = "mkdir"; sha256 = "0sb07xpy66ws6f2jfnpjibyimzb71al8n8c6y4nr8h50al3g90nr"; };
@@ -39,6 +37,11 @@ in rec {
     # Ensure consistent LC_VERSION_MIN_MACOSX and remove LC_UUID.
     export MACOSX_DEPLOYMENT_TARGET=${macosVersionMin}
     export NIX_LDFLAGS+=" -macosx_version_min ${macosVersionMin} -sdk_version ${appleSdkVersion} -no_uuid"
+
+    # Prevent clang from generating references to /tmp/nix-build-...
+    export NIX_CFLAGS+=" -ffile-prefix-map=$NIX_BUILD_TOP=/build"
+    # Zero out timestamp fields in archive files
+    export ZERO_AR_DATE=1
 
     # Workaround for https://openradar.appspot.com/22671534 on 10.11.
     export gl_cv_func_getcwd_abort_bug=no
@@ -161,7 +164,7 @@ in rec {
         dyld = bootstrapTools;
       };
 
-      llvmPackages_7 = {
+      llvmPackages_10 = {
         libcxx = stdenv.mkDerivation {
           name = "bootstrap-stage0-libcxx";
           phases = [ "installPhase" "fixupPhase" ];
@@ -264,9 +267,9 @@ in rec {
       # Avoid pulling in a full python and its extra dependencies for the llvm/clang builds.
       libxml2 = super.libxml2.override { pythonSupport = false; };
 
-      llvmPackages_7 = super.llvmPackages_7 // (let
-        libraries = super.llvmPackages_7.libraries.extend (_: _: {
-          inherit (llvmPackages_7) libcxx libcxxabi;
+      llvmPackages_10 = super.llvmPackages_10 // (let
+        libraries = super.llvmPackages_10.libraries.extend (_: _: {
+          inherit (llvmPackages_10) libcxx libcxxabi;
         });
       in { inherit libraries; } // libraries);
 
@@ -318,13 +321,13 @@ in rec {
         ];
       });
 
-      llvmPackages_7 = super.llvmPackages_7 // (let
-        tools = super.llvmPackages_7.tools.extend (llvmSelf: _: {
-          clang-unwrapped = llvmPackages_7.clang-unwrapped.override { llvm = llvmSelf.llvm; };
-          llvm = llvmPackages_7.llvm.override { libxml2 = self.darwin.libxml2-nopython; };
+      llvmPackages_10 = super.llvmPackages_10 // (let
+        tools = super.llvmPackages_10.tools.extend (llvmSelf: _: {
+          clang-unwrapped = llvmPackages_10.clang-unwrapped.override { llvm = llvmSelf.llvm; };
+          llvm = llvmPackages_10.llvm.override { libxml2 = self.darwin.libxml2-nopython; };
         });
-        libraries = super.llvmPackages_7.libraries.extend (llvmSelf: _: {
-          inherit (llvmPackages_7) libcxx libcxxabi compiler-rt;
+        libraries = super.llvmPackages_10.libraries.extend (llvmSelf: _: {
+          inherit (llvmPackages_10) libcxx libcxxabi compiler-rt;
         });
       in { inherit tools libraries; } // tools // libraries);
 
@@ -359,12 +362,12 @@ in rec {
         ncurses libffi zlib llvm gmp pcre gnugrep
         coreutils findutils diffutils patchutils;
 
-      llvmPackages_7 = super.llvmPackages_7 // (let
-        tools = super.llvmPackages_7.tools.extend (_: super: {
-          inherit (llvmPackages_7) llvm clang-unwrapped;
+      llvmPackages_10 = super.llvmPackages_10 // (let
+        tools = super.llvmPackages_10.tools.extend (_: super: {
+          inherit (llvmPackages_10) llvm clang-unwrapped;
         });
-        libraries = super.llvmPackages_7.libraries.extend (_: _: {
-          inherit (llvmPackages_7) compiler-rt libcxx libcxxabi;
+        libraries = super.llvmPackages_10.libraries.extend (_: _: {
+          inherit (llvmPackages_10) compiler-rt libcxx libcxxabi;
         });
       in { inherit tools libraries; } // tools // libraries);
 

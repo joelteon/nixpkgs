@@ -23,6 +23,9 @@ appleDerivation {
   '';
 
   buildPhase = ''
+    # bsdmake tries to setrlimit() which is not allowed in the sandbox. the build environment
+    # should already have a high enough ulimit that the extra code within bsdmake is unneeded.
+    substituteInPlace main.c --replace "ifdef RLIMIT_NOFILE" "if 0"
     objs=()
     for file in $(find . -name '*.c'); do
       obj="$(basename "$file" .c).o"
